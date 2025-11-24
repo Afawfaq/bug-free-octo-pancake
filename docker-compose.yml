@@ -24,6 +24,8 @@ services:
       - nuclei
       - webshot
       - report
+      - advanced-monitor
+      - attack-surface
 
   passive:
     build: ./passive
@@ -87,6 +89,29 @@ services:
     volumes:
       - ./output:/output
       - ./templates:/templates
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  advanced-monitor:
+    build: ./advanced-monitor
+    container_name: recon-advanced-monitor
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  attack-surface:
+    build: ./attack-surface
+    container_name: recon-attack-surface
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
     command: ["/bin/bash", "-c", "sleep infinity"]
 
 networks:
