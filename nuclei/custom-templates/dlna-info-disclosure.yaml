@@ -1,0 +1,32 @@
+id: dlna-information-disclosure
+
+info:
+  name: DLNA MediaServer Information Disclosure
+  author: recon-suite
+  severity: low
+  description: Detects DLNA MediaServer XML information disclosure
+  tags: dlna,iot,disclosure
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/description.xml"
+      - "{{BaseURL}}:8008/ssdp/device-desc.xml"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "urn:schemas-upnp-org:device:MediaServer"
+          - "ContentDirectory"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        regex:
+          - '<friendlyName>(.*?)</friendlyName>'
+          - '<manufacturer>(.*?)</manufacturer>'

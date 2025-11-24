@@ -1,0 +1,30 @@
+id: printer-default-credentials
+
+info:
+  name: Printer Default Credentials
+  author: recon-suite
+  severity: critical
+  description: Tests for default credentials on network printers
+  tags: printer,iot,default-credentials
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+      - "{{BaseURL}}/hp/device/SignIn/Index"
+      - "{{BaseURL}}/SSI/index.htm"
+
+    matchers:
+      - type: word
+        words:
+          - "HP LaserJet"
+          - "Epson"
+          - "Canon"
+          - "Brother"
+          - "Printer"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+          - 401

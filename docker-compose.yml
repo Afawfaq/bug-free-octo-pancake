@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  orchestrator:
+    build: ./orchestrator
+    container_name: recon-orchestrator
+    network_mode: host
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TARGET_NETWORK=192.168.68.0/24
+      - ROUTER_IP=192.168.68.1
+      - CHROMECAST_IP=192.168.68.56
+      - TV_IP=192.168.68.62
+      - DLNA_IPS=192.168.68.52,192.168.68.62
+      - PRINTER_IP=192.168.68.54
+    depends_on:
+      - passive
+      - discovery
+      - fingerprint
+      - iot
+      - nuclei
+      - webshot
+      - report
+
+  passive:
+    build: ./passive
+    container_name: recon-passive
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  discovery:
+    build: ./discovery
+    container_name: recon-discovery
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  fingerprint:
+    build: ./fingerprint
+    container_name: recon-fingerprint
+    network_mode: host
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  iot:
+    build: ./iot
+    container_name: recon-iot
+    network_mode: host
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  nuclei:
+    build: ./nuclei
+    container_name: recon-nuclei
+    network_mode: host
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  webshot:
+    build: ./webshot
+    container_name: recon-webshot
+    network_mode: host
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+  report:
+    build: ./report
+    container_name: recon-report
+    network_mode: host
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+    command: ["/bin/bash", "-c", "sleep infinity"]
+
+networks:
+  default:
+    driver: bridge
