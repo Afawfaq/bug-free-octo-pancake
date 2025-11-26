@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN Reconnaissance Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,255,0,0.1);
+        }
+        h1 {
+            color: #00ff00;
+            text-align: center;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #00cc00;
+            margin-top: 30px;
+            border-left: 4px solid #00cc00;
+            padding-left: 10px;
+        }
+        h3 {
+            color: #00aa00;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        .info-box {
+            background-color: #2a2a2a;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #4a2a2a;
+            border-color: #ff0000;
+        }
+        .success {
+            background-color: #2a4a2a;
+            border-color: #00ff00;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th {
+            background-color: #1a1a1a;
+            color: #00ff00;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #3a3a3a;
+        }
+        .stat {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+            padding: 10px 20px;
+            background-color: #1a1a1a;
+            border-left: 3px solid #00ff00;
+            border-radius: 3px;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .stat-value {
+            color: #00ff00;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        code {
+            background-color: #1a1a1a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+        .severity-critical { color: #ff0000; font-weight: bold; }
+        .severity-high { color: #ff6600; font-weight: bold; }
+        .severity-medium { color: #ffaa00; font-weight: bold; }
+        .severity-low { color: #ffff00; }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #444;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LAN RECONNAISSANCE REPORT</h1>
+        
+        <div class="info-box success">
+            <strong>Scan Date:</strong> {{ data.scan_time }}<br>
+            <strong>Report Type:</strong> Comprehensive Network Reconnaissance
+        </div>
+
+        <h2>📊 Executive Summary</h2>
+        <div class="section">
+            <div class="stat">
+                <div class="stat-label">Discovered Hosts</div>
+                <div class="stat-value">{{ data.discovery.hosts|length if data.discovery.hosts else 0 }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Security Findings</div>
+                <div class="stat-value">{{ data.nuclei.findings|length if data.nuclei.findings else 0 }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">IoT Devices</div>
+                <div class="stat-value">{{ data.iot|length if data.iot else 0 }}</div>
+            </div>
+        </div>
+
+        <h2>🌐 Network Topology</h2>
+        <div class="section">
+            <img src="network_topology.png" alt="Network Topology Graph">
+        </div>
+
+        <h2>🔎 Passive Reconnaissance</h2>
+        <div class="section">
+            <h3>Discovered IPs via Passive Methods</h3>
+            {% if data.passive.discovered_ips %}
+                <table>
+                    <tr><th>IP Address</th></tr>
+                    {% for ip in data.passive.discovered_ips %}
+                    <tr><td><code>{{ ip }}</code></td></tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No passive discovery data available.</p>
+            {% endif %}
+        </div>
+
+        <h2>🎯 Active Discovery</h2>
+        <div class="section">
+            <h3>Hosts and Open Ports</h3>
+            {% if data.discovery.hosts %}
+                <table>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Open Ports</th>
+                        <th>Port Count</th>
+                    </tr>
+                    {% for ip, ports in data.discovery.hosts.items() %}
+                    <tr>
+                        <td><code>{{ ip }}</code></td>
+                        <td>{{ ports|join(', ') }}</td>
+                        <td>{{ ports|length }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No active discovery data available.</p>
+            {% endif %}
+        </div>
+
+        <h2>🔬 Fingerprinting Results</h2>
+        <div class="section">
+            <h3>HTTP Services</h3>
+            {% if data.fingerprint.httpx %}
+                <table>
+                    <tr>
+                        <th>URL</th>
+                        <th>Status</th>
+                        <th>Title</th>
+                        <th>Tech</th>
+                    </tr>
+                    {% for service in data.fingerprint.httpx %}
+                    <tr>
+                        <td><code>{{ service.url }}</code></td>
+                        <td>{{ service.status_code }}</td>
+                        <td>{{ service.title|default('N/A') }}</td>
+                        <td>{{ service.tech|default('N/A') }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No HTTP fingerprinting data available.</p>
+            {% endif %}
+        </div>
+
+        <h2>🤖 IoT Device Enumeration</h2>
+        <div class="section">
+            {% if data.iot %}
+                {% for filename, iot_data in data.iot.items() %}
+                    <h3>{{ filename }}</h3>
+                    <div class="info-box">
+                        <pre>{{ iot_data|tojson(indent=2) }}</pre>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No IoT enumeration data available.</p>
+            {% endif %}
+        </div>
+
+        <h2>🛡️ Security Findings (Nuclei)</h2>
+        <div class="section">
+            {% if data.nuclei.findings %}
+                <table>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Template</th>
+                        <th>Host</th>
+                        <th>Info</th>
+                    </tr>
+                    {% for finding in data.nuclei.findings %}
+                    <tr>
+                        <td><span class="severity-{{ finding.info.severity }}">{{ finding.info.severity|upper }}</span></td>
+                        <td><code>{{ finding.info.name }}</code></td>
+                        <td><code>{{ finding.host }}</code></td>
+                        <td>{{ finding.info.description|default('N/A') }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <div class="info-box success">
+                    <p>✅ No security findings detected by Nuclei scans.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <h2>📸 Web Interface Screenshots</h2>
+        <div class="section">
+            <p>Screenshots are available in the <code>output/webshot/</code> directory.</p>
+            <ul>
+                <li>Aquatone screenshots: <code>output/webshot/aquatone/</code></li>
+                <li>EyeWitness screenshots: <code>output/webshot/eyewitness/</code></li>
+            </ul>
+        </div>
+
+        <h2>🎯 Key Findings Summary</h2>
+        <div class="section">
+            <div class="info-box warning">
+                <h3>⚠️ Attack Surface Analysis</h3>
+                <ul>
+                    <li><strong>UPnP Exposure:</strong> Check for IGD services at router (192.168.68.1)</li>
+                    <li><strong>Chromecast:</strong> Unprotected Cast API at 192.168.68.56</li>
+                    <li><strong>Smart TV:</strong> DLNA/Netflix endpoints at 192.168.68.62</li>
+                    <li><strong>Printer:</strong> Web interface accessible at 192.168.68.54</li>
+                    <li><strong>DLNA Servers:</strong> Media enumeration possible on .52 and .62</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #444; text-align: center; color: #666;">
+            <p>Generated by LAN Recon Suite | Containerized Network Reconnaissance Framework</p>
+        </footer>
+    </div>
+</body>
+</html>

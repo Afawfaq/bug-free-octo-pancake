@@ -1,0 +1,33 @@
+id: chromecast-exposed-api
+
+info:
+  name: Chromecast Exposed API Detection
+  author: recon-suite
+  severity: medium
+  description: Detects exposed Chromecast/Google Cast APIs
+  tags: chromecast,iot,cast
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}:8008/setup/eureka_info"
+      - "{{BaseURL}}:8008/ssdp/device-desc.xml"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "eureka"
+          - "Chromecast"
+          - "Google Cast"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: json
+        json:
+          - '.name'
+          - '.build_version'

@@ -1,0 +1,33 @@
+id: upnp-misconfiguration
+
+info:
+  name: UPnP IGD Misconfiguration Detection
+  author: recon-suite
+  severity: high
+  description: Detects misconfigured UPnP IGD services that may expose internal network
+  tags: upnp,iot,network
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/rootDesc.xml"
+      - "{{BaseURL}}/zetna/rootDesc.xml"
+      - "{{BaseURL}}:5000/rootDesc.xml"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "urn:schemas-upnp-org:device:InternetGatewayDevice"
+          - "WANIPConnection"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        regex:
+          - '<friendlyName>(.*?)</friendlyName>'
+          - '<modelName>(.*?)</modelName>'
