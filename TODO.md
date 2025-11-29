@@ -88,6 +88,20 @@
 - [x] Additional Nuclei templates (router, smart-tv, nas, ip-camera, iot-telnet)
 - [x] CSV export for findings
 
+### New in v2.2.0 (Modular Framework)
+- [x] Plugin architecture with base classes and lifecycle management
+- [x] Hook system for scan events (pre_scan, post_discovery, on_finding, etc.)
+- [x] REST API server for programmatic access
+- [x] Database integration with SQLite for persistent storage
+- [x] Scan history and comparison features
+- [x] Retry/recovery system with multiple strategies
+- [x] Circuit breaker pattern for failing services
+- [x] Checkpoint/resume for long-running scans
+- [x] Configuration validation with JSON Schema
+- [x] Environment variable expansion in configs
+- [x] Prometheus-compatible metrics system
+- [x] Timer context manager for performance tracking
+
 ---
 
 ## 📐 DESIGNED & READY FOR IMPLEMENTATION

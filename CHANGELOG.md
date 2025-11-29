@@ -5,6 +5,56 @@ All notable changes to the LAN Reconnaissance Framework will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-11-29
+
+### Added
+- **Plugin Architecture**: Modular plugin system for extending functionality:
+  - Base plugin classes (PluginBase, ScannerPlugin, AnalyzerPlugin, ReporterPlugin)
+  - Plugin lifecycle management (load, unload, enable, disable)
+  - Hook system for scan events (pre_scan, post_discovery, on_finding, etc.)
+  - Plugin configuration support
+  - Example plugin template generator
+- **REST API Server**: Full-featured API for programmatic access:
+  - Health check and status endpoints
+  - Scan control (start, stop, progress)
+  - Results retrieval and history
+  - Configuration management
+  - Plugin management endpoints
+  - Prometheus metrics endpoint
+  - CORS support for web integration
+- **Database Integration**: Persistent storage with SQLite:
+  - Scan result persistence with full history
+  - Host inventory tracking across scans
+  - Finding storage with severity tracking
+  - Configuration snapshots
+  - Scan comparison for change detection
+  - Automatic cleanup of old data
+- **Retry & Recovery System**: Robust error handling:
+  - Multiple retry strategies (fixed, linear, exponential, exponential with jitter)
+  - Circuit breaker pattern for failing services
+  - Checkpoint/resume for long-running scans
+  - Graceful degradation with fallback handlers
+  - Retry decorator for easy integration
+- **Configuration Validation**: Schema-based validation:
+  - JSON Schema-like validation
+  - Custom validators for IPs, CIDRs, emails
+  - Environment variable expansion (${VAR:-default} syntax)
+  - Default value injection
+  - Configuration migration support
+  - Example configuration generator
+- **Metrics & Monitoring**: Prometheus-compatible metrics:
+  - Counter, Gauge, Histogram, Summary metric types
+  - Pre-defined scan, phase, finding, and container metrics
+  - Prometheus text format export
+  - JSON export for dashboards
+  - Timer context manager for easy timing
+  - API request metrics
+
+### Changed
+- Framework is now fully modular with well-defined interfaces
+- All components can be extended without modifying core code
+- Improved error handling throughout the framework
+
 ## [2.1.0] - 2025-11-29
 
 ### Added
