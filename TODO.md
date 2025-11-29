@@ -70,10 +70,23 @@
 ## 🔄 IN PROGRESS
 
 ### Container Integration
-- [ ] Update orchestrator to include all advanced modules
+- [x] Update orchestrator to include all advanced modules
 - [ ] Test complete pipeline end-to-end
-- [ ] Optimize container startup order
-- [ ] Add health checks for all containers
+- [x] Optimize container startup order
+- [x] Add health checks for all containers
+
+### New in v2.0.0
+- [x] Parallel execution for independent phases
+- [x] CLI argument support
+- [x] Enhanced logging with colors
+- [x] Execution statistics JSON export
+- [x] GitHub Actions CI/CD pipeline
+- [x] Default credentials database
+- [x] Scan profiles system
+- [x] Notification system (Slack, Discord, Email, Webhooks)
+- [x] Enhanced report builder with risk scoring
+- [x] Additional Nuclei templates (router, smart-tv, nas, ip-camera, iot-telnet)
+- [x] CSV export for findings
 
 ---
 

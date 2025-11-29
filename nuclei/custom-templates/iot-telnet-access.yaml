@@ -1,0 +1,41 @@
+id: iot-telnet-access
+
+info:
+  name: IoT Device Telnet Access
+  author: lan-recon-team
+  severity: critical
+  description: |
+    Detects IoT devices with exposed Telnet service which often indicates
+    default or weak credentials, enabling full device compromise.
+  tags: iot,telnet,default-creds,botnet
+  reference:
+    - https://www.cisa.gov/uscert/ncas/alerts/TA16-288A
+
+network:
+  - inputs:
+      - data: "\r\n"
+    host:
+      - "{{Hostname}}"
+    port: 23
+    read-size: 1024
+    
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "login:"
+          - "Login:"
+          - "Username:"
+          - "username:"
+          - "Password:"
+          - "password:"
+          - "BusyBox"
+          - "(none) login:"
+        condition: or
+
+    extractors:
+      - type: regex
+        name: banner
+        regex:
+          - '([A-Za-z0-9\-\. ]+)\s+login:'
+          - 'BusyBox\s+v([0-9\.]+)'

@@ -1,0 +1,53 @@
+id: smart-tv-debug
+
+info:
+  name: Smart TV Debug Endpoints
+  author: lan-recon-team
+  severity: high
+  description: |
+    Detects exposed debug endpoints on smart TVs that could allow unauthorized
+    remote control, app installation, or information disclosure.
+  tags: tv,smart,debug,iot
+  reference:
+    - https://www.samsung.com/us/support/troubleshooting/TSG01001336/
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/v2/"
+      - "{{BaseURL}}/api/v2/channels"
+      - "{{BaseURL}}/ms/1.0/"
+      - "{{BaseURL}}/applications"
+      - "{{BaseURL}}/debug"
+      - "{{BaseURL}}:8001/api/v2/"
+      - "{{BaseURL}}:8002/api/v2/"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "device"
+          - "name"
+          - "model"
+          - "firmware"
+          - "Samsung"
+          - "LG"
+          - "Sony"
+          - "Vizio"
+          - "webOS"
+          - "Tizen"
+        condition: or
+
+      - type: regex
+        regex:
+          - '"device"\s*:\s*\{'
+          - '"name"\s*:\s*"[^"]+TV'
+          - '"modelName"\s*:'
+
+    extractors:
+      - type: json
+        name: tv-info
+        json:
+          - '.device.name'
+          - '.device.model'
+          - '.device.modelName'

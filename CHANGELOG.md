@@ -5,6 +5,43 @@ All notable changes to the LAN Reconnaissance Framework will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-29
+
+### Added
+- **Notification System**: Multi-channel alerting via:
+  - Slack webhooks
+  - Discord webhooks
+  - Email (SMTP)
+  - Custom webhooks
+  - Configurable severity thresholds
+- **Default Credentials Database**: Comprehensive database covering:
+  - Routers (ASUS, TP-Link, Netgear, Linksys, D-Link, Ubiquiti, Cisco, etc.)
+  - Printers (HP, Epson, Brother, Canon, Lexmark, Xerox, Samsung, Ricoh)
+  - NAS devices (Synology, QNAP, Western Digital, NETGEAR, Buffalo, Drobo)
+  - IP Cameras (Hikvision, Dahua, Axis, Foscam, Reolink, Amcrest)
+  - Smart home devices, switches, access points, VoIP phones
+- **Scan Profiles System**: Predefined profiles for different use cases:
+  - Quick, Standard, Thorough, Stealth, IoT-Focused, Vulnerability, Compliance
+- **New Nuclei Templates**:
+  - `router-admin-panel.yaml` - Router admin panel detection
+  - `smart-tv-debug.yaml` - Smart TV debug endpoint exposure
+  - `nas-exposure.yaml` - NAS device vulnerability detection
+  - `ip-camera-exposure.yaml` - IP camera exposure and RTSP detection
+  - `iot-telnet-access.yaml` - IoT Telnet service detection
+- **Enhanced Report Builder v2.0.0**:
+  - Executive summary with risk scoring (0-100)
+  - Severity breakdown visualization
+  - Device type classification in network graph
+  - CSV export for spreadsheet analysis
+  - Improved network topology with device type colors
+  - Default HTML template included
+- **Data Directory**: Centralized data storage with documentation
+
+### Changed
+- Report builder now calculates risk scores based on vulnerability weights
+- Network topology graph now classifies devices by type (server, printer, IoT, etc.)
+- Improved report template with modern styling
+
 ## [2.0.0] - 2025-11-29
 
 ### Added

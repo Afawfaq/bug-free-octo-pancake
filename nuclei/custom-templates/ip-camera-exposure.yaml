@@ -1,0 +1,69 @@
+id: ip-camera-exposure
+
+info:
+  name: IP Camera Exposure Detection
+  author: lan-recon-team
+  severity: critical
+  description: |
+    Detects exposed IP cameras with potential unauthorized access. Many IP cameras
+    have known vulnerabilities, default credentials, or RTSP streams accessible
+    without authentication.
+  tags: camera,ip-camera,iot,rtsp,surveillance
+  reference:
+    - https://www.cisa.gov/uscert/ncas/alerts/AA21-265A
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/cgi-bin/gw.cgi"
+      - "{{BaseURL}}/onvif/device_service"
+      - "{{BaseURL}}/ISAPI/System/deviceInfo"
+      - "{{BaseURL}}/web/index.html"
+      - "{{BaseURL}}/doc/page/login.asp"
+      - "{{BaseURL}}/cgi-bin/viewer/video.jpg"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "Hikvision"
+          - "Dahua"
+          - "Axis"
+          - "ONVIF"
+          - "Foscam"
+          - "Reolink"
+          - "Amcrest"
+          - "Wyze"
+          - "Nest"
+          - "Ring"
+          - "IPCamera"
+          - "Network Camera"
+        condition: or
+
+      - type: regex
+        regex:
+          - 'firmware[Vv]ersion["\s:=]+([0-9\.]+)'
+          - 'serialNumber["\s:=]+([A-Za-z0-9]+)'
+          - 'deviceType["\s:=]+"([^"]+)"'
+
+    extractors:
+      - type: regex
+        name: camera-info
+        part: body
+        regex:
+          - 'model["\s:=]+([A-Za-z0-9\-\_]+)'
+          - 'firmware["\s:=]+([0-9\.]+)'
+          - 'deviceName["\s:=]+"([^"]+)"'
+
+network:
+  - inputs:
+      - data: "OPTIONS rtsp://{{Host}}:554/ RTSP/1.0\r\nCSeq: 1\r\n\r\n"
+    host:
+      - "{{Hostname}}"
+    port: 554
+    
+    matchers:
+      - type: word
+        words:
+          - "RTSP/1.0 200 OK"
+          - "Public: DESCRIBE"
