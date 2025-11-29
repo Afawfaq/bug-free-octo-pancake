@@ -102,6 +102,22 @@
 - [x] Prometheus-compatible metrics system
 - [x] Timer context manager for performance tracking
 
+### New in v2.3.0 (Enhanced UX & Analytics)
+- [x] Scan scheduler with cron-style scheduling
+- [x] Job management (add, remove, pause, resume, run-now)
+- [x] Export/Import system (JSON, CSV, XML, YAML)
+- [x] Data anonymization for secure sharing
+- [x] Anomaly detection with device baselines
+- [x] Statistical anomaly detection (z-score)
+- [x] New/missing host detection
+- [x] Port/service change detection
+- [x] Suspicious port/service alerts
+- [x] Enhanced CLI tool with interactive shell
+- [x] Web dashboard for browser-based monitoring
+- [x] Real-time scan progress visualization
+- [x] Network topology visualization
+- [x] Finding severity charts
+
 ---
 
 ## 📐 DESIGNED & READY FOR IMPLEMENTATION

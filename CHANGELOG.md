@@ -5,6 +5,59 @@ All notable changes to the LAN Reconnaissance Framework will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-11-29
+
+### Added
+- **Scan Scheduler**: Full-featured job scheduling system:
+  - Cron-style scheduling expressions
+  - One-time scheduled scans
+  - Recurring scans with configurable intervals
+  - Daily and weekly scheduling
+  - Job management (add, remove, pause, resume)
+  - Scan history tracking per job
+  - Notification integration for job completion/failure
+  - Persistence across restarts (SQLite)
+- **Export/Import System**: Data portability and backup:
+  - Multiple export formats (JSON, CSV, XML, YAML)
+  - Selective data export (scans, hosts, findings)
+  - Data anonymization for sharing
+  - Compression support (gzip)
+  - Import validation and merging
+  - CLI interface for export/import operations
+- **Anomaly Detection**: ML-based network behavior analysis:
+  - Statistical anomaly detection (z-score based)
+  - Device behavior baselines
+  - New host/missing host detection
+  - Port usage pattern analysis
+  - Service change detection
+  - OS/device type change alerts
+  - Suspicious port/service detection
+  - Time-based pattern recognition
+  - Anomaly history tracking
+  - Configurable detection thresholds
+- **Enhanced CLI Tool**: Unified command-line interface:
+  - Comprehensive command structure (scan, status, stop, logs, results, config, etc.)
+  - Interactive shell mode with command history
+  - Multiple output formats (table, JSON, CSV)
+  - Configuration profile management
+  - Batch job execution
+  - Color-coded output with severity indicators
+  - Tab completion support
+- **Web Dashboard**: Browser-based monitoring interface:
+  - Real-time scan status and progress
+  - Interactive network topology visualization
+  - Finding severity breakdown charts
+  - Host inventory table
+  - Live scan logs
+  - Scan history with comparison
+  - Start/stop scan controls
+  - Dark theme with responsive design
+  - REST API integration
+
+### Changed
+- CLI now supports all major framework operations from a single entry point
+- Improved data organization with dedicated database per module
+
 ## [2.2.0] - 2025-11-29
 
 ### Added
