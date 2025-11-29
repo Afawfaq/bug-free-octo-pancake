@@ -15,7 +15,6 @@ import sys
 import time
 import json
 import subprocess
-import threading
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Optional, Tuple
@@ -41,6 +40,19 @@ class ReconOrchestrator:
     """
     
     VERSION = "2.0.0"
+    
+    # Container names as class constants for maintainability
+    CONTAINERS = [
+        "recon-passive",
+        "recon-discovery",
+        "recon-fingerprint",
+        "recon-iot",
+        "recon-nuclei",
+        "recon-webshot",
+        "recon-report",
+        "recon-advanced-monitor",
+        "recon-attack-surface"
+    ]
     
     def __init__(self):
         self.output_dir = "/output"
@@ -134,34 +146,21 @@ class ReconOrchestrator:
         """Wait for all containers to be ready with progress indicator."""
         self.log("Waiting for containers to be ready...", "INFO")
         
-        # Full list of containers including advanced ones
-        containers = [
-            "recon-passive",
-            "recon-discovery", 
-            "recon-fingerprint",
-            "recon-iot",
-            "recon-nuclei",
-            "recon-webshot",
-            "recon-report",
-            "recon-advanced-monitor",
-            "recon-attack-surface"
-        ]
-        
         max_attempts = 30
         for attempt in range(max_attempts):
             ready_containers = []
             not_ready = []
             
-            for container in containers:
+            for container in self.CONTAINERS:
                 if self.check_container_health(container):
                     ready_containers.append(container)
                 else:
                     not_ready.append(container)
             
-            progress = len(ready_containers) / len(containers) * 100
-            self.log(f"Container readiness: {progress:.0f}% ({len(ready_containers)}/{len(containers)})", "INFO")
+            progress = len(ready_containers) / len(self.CONTAINERS) * 100
+            self.log(f"Container readiness: {progress:.0f}% ({len(ready_containers)}/{len(self.CONTAINERS)})", "INFO")
             
-            if len(ready_containers) == len(containers):
+            if len(ready_containers) == len(self.CONTAINERS):
                 self.log("All containers are ready!", "SUCCESS")
                 return True
             

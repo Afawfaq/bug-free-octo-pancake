@@ -17,7 +17,7 @@ class TestOrchestratorInitialization:
     
     def test_default_configuration(self):
         """Test that default configuration values are set correctly."""
-        # Set up mock environment
+        # Use patch.dict to mock environment variables
         with patch.dict(os.environ, {}, clear=True):
             # Import after environment is set
             from run import ReconOrchestrator
@@ -42,12 +42,8 @@ class TestOrchestratorInitialization:
         with patch.dict(os.environ, custom_env, clear=True):
             from run import ReconOrchestrator
             
-            # Need to reimport to pick up new env vars
-            import importlib
-            import run
-            importlib.reload(run)
-            
-            orchestrator = run.ReconOrchestrator()
+            # Create a new instance to pick up the mocked env vars
+            orchestrator = ReconOrchestrator()
             
             assert orchestrator.target_network == "10.0.0.0/24"
             assert orchestrator.router_ip == "10.0.0.1"
@@ -106,6 +102,19 @@ class TestContainerHealthCheck:
                 
                 result = orchestrator.check_container_health("test-container")
                 assert result == False
+
+
+class TestContainerConstants:
+    """Test the container constants."""
+    
+    def test_containers_list_exists(self):
+        """Test that CONTAINERS class constant is defined."""
+        from run import ReconOrchestrator
+        
+        assert hasattr(ReconOrchestrator, 'CONTAINERS')
+        assert len(ReconOrchestrator.CONTAINERS) == 9
+        assert "recon-orchestrator" not in ReconOrchestrator.CONTAINERS
+        assert "recon-passive" in ReconOrchestrator.CONTAINERS
 
 
 class TestPhaseStatistics:
