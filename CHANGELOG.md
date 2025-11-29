@@ -1,0 +1,122 @@
+# Changelog
+
+All notable changes to the LAN Reconnaissance Framework will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.0] - 2025-11-29
+
+### Added
+- **Parallel Execution**: Independent phases now run in parallel for significantly faster scans
+- **Advanced Monitoring Phase**: New Phase 7 integrates PKI monitoring, DHCP profiling, DNS analysis, and protocol guilt analysis
+- **Attack Surface Phase**: New Phase 8 for stress testing, forgotten protocol scanning, and trust assumption testing
+- **Enhanced Orchestrator v2.0.0**:
+  - Color-coded logging with severity levels
+  - CLI argument support (`--verbose`, `--no-parallel`, `--timeout`, `--passive-duration`)
+  - Phase timing statistics
+  - Execution stats JSON export
+  - Better error handling and reporting
+- **CI/CD Pipeline**: GitHub Actions workflow for:
+  - Code linting (flake8, black, shellcheck)
+  - Unit testing with pytest
+  - Security scanning with Trivy
+  - Docker container builds
+  - Docker Compose validation
+  - Documentation checks
+  - Automated releases
+- **Health Checks**: Container health monitoring with progress indicators
+- **Execution Statistics**: Detailed JSON output of scan performance metrics
+
+### Changed
+- Orchestrator now coordinates 9 phases instead of 7
+- Improved container readiness checking with percentage progress
+- Enhanced summary output with severity breakdown for findings
+- Better timeout handling with configurable values
+
+### Fixed
+- Container wait logic now checks all containers including advanced ones
+- More robust error handling in phase execution
+
+## [1.0.0] - 2025-11-24
+
+### Added
+- Initial release of LAN Reconnaissance Framework
+- **Core Containers**:
+  - Passive reconnaissance (ARP, mDNS, SSDP)
+  - Active discovery (naabu, rustscan, masscan)
+  - Service fingerprinting (nmap, httpx, WhatWeb)
+  - IoT enumeration (Chromecast, printers, TVs, DLNA)
+  - Nuclei security scanning
+  - Web screenshots (Aquatone, EyeWitness)
+  - Report generation (HTML, JSON, network graphs)
+  - Main orchestrator
+- **Advanced Containers**:
+  - Advanced monitoring (PKI, DHCP, DNS, metadata, protocol guilt)
+  - Attack surface analysis (stress, forgotten protocols, entropy, trust)
+- **Custom Nuclei Templates**:
+  - UPnP misconfiguration detection
+  - Printer default credential testing
+  - Chromecast exposed API checks
+  - DLNA information disclosure
+- **Documentation**:
+  - README.md - Main documentation
+  - USAGE.md - Detailed usage guide
+  - ARCHITECTURE.md - Technical architecture
+  - CONTRIBUTING.md - Contribution guidelines
+  - QUICKSTART.md - Quick start guide
+  - FEATURES.md - Complete feature list
+  - ZERODAY_FRAMEWORK.md - Research framework architecture
+  - COMPLETE_ATTACK_SURFACE.md - Practical attack techniques
+  - ADVERSARIAL_THINKING.md - Offensive mindset documentation
+  - PROJECT_STATUS.md - Current status
+- **Scripts**:
+  - start.sh - Main launcher
+  - stop.sh - Container shutdown
+  - clean.sh - Cleanup script
+  - quick-scan.sh - Fast scan mode
+  - view-report.sh - Report viewer
+
+### Security
+- All containers run with minimal required capabilities
+- No external data transmission
+- Local-only result storage
+- Rate limiting on aggressive scans
+
+---
+
+## Roadmap
+
+### [2.1.0] - Planned
+- Web-based dashboard for real-time monitoring
+- REST API for programmatic access
+- Webhook notifications for findings
+- Database backend for result persistence
+
+### [3.0.0] - Future
+- Zero-day research framework integration
+- ML-based anomaly detection
+- Distributed scanning capabilities
+- Full fuzzing framework (boofuzz, AFL++)
+
+---
+
+## Migration Guide
+
+### From 1.0.0 to 2.0.0
+
+1. **Update docker-compose.yml**: The orchestrator now depends on advanced-monitor and attack-surface containers.
+
+2. **Environment Variables**: New optional variables:
+   ```bash
+   PARALLEL_EXECUTION=true  # Enable/disable parallel execution
+   VERBOSE=false            # Enable verbose logging
+   SCAN_TIMEOUT=600         # Command timeout in seconds
+   ```
+
+3. **Output Changes**: New `execution_stats.json` file in output directory.
+
+4. **Phase Numbers Changed**: 
+   - Old Phase 7 (Report) → New Phase 9
+   - New Phase 7: Advanced Monitoring
+   - New Phase 8: Attack Surface Analysis
