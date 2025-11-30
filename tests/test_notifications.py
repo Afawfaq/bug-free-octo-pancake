@@ -3,14 +3,10 @@ Unit tests for the Notifications module.
 """
 
 import os
-import sys
 import json
 import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'orchestrator'))
 
 
 class TestNotificationManagerInitialization:

@@ -3,15 +3,11 @@ Unit tests for the Retry and Recovery module.
 """
 
 import os
-import sys
 import json
 import time
 import pytest
 import tempfile
 from unittest.mock import patch, MagicMock
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'orchestrator'))
 
 
 class TestRetryStrategy:

@@ -3,14 +3,10 @@ Unit tests for the Config Validator module.
 """
 
 import os
-import sys
 import json
 import pytest
 import tempfile
 from unittest.mock import patch
-
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'orchestrator'))
 
 
 class TestValidationError:
