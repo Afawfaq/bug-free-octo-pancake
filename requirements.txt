@@ -1,0 +1,37 @@
+# LAN Reconnaissance Framework - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core dependencies (required)
+docker>=5.0.0
+requests>=2.25.0
+jinja2>=3.0.0
+flask>=2.0.0
+pyyaml>=5.4.0
+networkx>=2.6.0
+
+# Database and data handling
+packaging>=21.0
+
+# Optional but recommended
+psutil>=5.8.0
+netifaces>=0.11.0
+colorama>=0.4.4
+python-dotenv>=0.19.0
+watchdog>=2.1.0
+
+# API and web
+flask-cors>=3.0.10
+werkzeug>=2.0.0
+
+# Metrics
+prometheus-client>=0.12.0
+
+# Testing
+pytest>=6.2.0
+pytest-cov>=2.12.0
+pytest-mock>=3.6.0
+
+# Development (optional)
+black>=21.0
+flake8>=3.9.0
+mypy>=0.910

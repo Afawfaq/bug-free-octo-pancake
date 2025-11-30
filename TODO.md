@@ -118,6 +118,20 @@
 - [x] Network topology visualization
 - [x] Finding severity charts
 
+### New in v2.4.0 (Cross-Platform)
+- [x] PowerShell scripts for Windows
+- [x] Windows/macOS Docker Compose with bridged networking
+- [x] Platform auto-detection
+- [x] Platform support documentation (PLATFORM_SUPPORT.md)
+- [x] WSL2 integration guide
+
+### New in v2.5.0 (Full Usability)
+- [x] Health checker module with system verification
+- [x] Dependency manager with auto-installation
+- [x] Integration module for unified API
+- [x] requirements.txt for Python dependencies
+- [x] Full platform compatibility verification
+
 ---
 
 ## 📐 DESIGNED & READY FOR IMPLEMENTATION

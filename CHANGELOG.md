@@ -5,6 +5,43 @@ All notable changes to the LAN Reconnaissance Framework will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2025-11-30
+
+### Added
+- **Health Checker Module** (`health_checker.py`): Comprehensive system health monitoring:
+  - Docker environment verification
+  - Container health status monitoring
+  - Network connectivity tests
+  - Disk space and memory monitoring
+  - Dependency verification
+  - Service availability tests
+  - Quick check vs full check modes
+  - JSON and CLI output formats
+  - Actionable recommendations
+- **Dependency Manager** (`dependency_manager.py`): Automated dependency management:
+  - Python package verification and installation
+  - System tool availability checks
+  - Docker image verification
+  - Version checking with minimum requirements
+  - Auto-generation of requirements.txt
+  - Platform-specific handling
+- **Integration Module** (`integration.py`): Unified framework interface:
+  - Single entry point for all framework features
+  - Programmatic API for automation
+  - Context manager support (`with LANReconFramework() as fw:`)
+  - Event callbacks (on_scan_start, on_scan_complete, etc.)
+  - Configuration from environment or code
+  - Scheduled scan support
+  - Export/import integration
+  - Quick scan convenience function
+- **requirements.txt**: Complete Python dependency specification
+- **Full compatibility verification** for all platforms
+
+### Changed
+- Framework now provides a single unified API via `integration.py`
+- All modules can be verified before running with health checker
+- Improved first-time user experience with dependency verification
+
 ## [2.4.0] - 2025-11-30
 
 ### Added
