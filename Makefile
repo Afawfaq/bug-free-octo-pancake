@@ -1,5 +1,6 @@
 # ============================================
 # LAN Reconnaissance Framework Makefile
+# Version 2.4.0 - Cross-Platform Support
 # ============================================
 # 
 # Usage:
@@ -15,8 +16,28 @@
 # Default target
 .DEFAULT_GOAL := help
 
+# Detect platform and set compose file
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    COMPOSE_FILE := docker-compose.windows.yml
+    PLATFORM := macOS
+else ifeq ($(findstring MINGW,$(UNAME_S)),MINGW)
+    COMPOSE_FILE := docker-compose.windows.yml
+    PLATFORM := Windows
+else ifeq ($(findstring MSYS,$(UNAME_S)),MSYS)
+    COMPOSE_FILE := docker-compose.windows.yml
+    PLATFORM := Windows
+else
+    COMPOSE_FILE := docker-compose.yml
+    PLATFORM := Linux
+endif
+
+# Allow override via environment variable
+ifdef COMPOSE_FILE_OVERRIDE
+    COMPOSE_FILE := $(COMPOSE_FILE_OVERRIDE)
+endif
+
 # Variables
-COMPOSE_FILE := docker-compose.yml
 PROJECT_NAME := lan-recon
 DOCKER_COMPOSE := docker compose
 
@@ -32,9 +53,14 @@ help:
 	@echo ""
 	@echo "$(BLUE)╔══════════════════════════════════════════════════════════╗$(RESET)"
 	@echo "$(BLUE)║     LAN Reconnaissance Framework - Make Commands         ║$(RESET)"
+	@echo "$(BLUE)║              Platform: $(PLATFORM) $(RESET)"
 	@echo "$(BLUE)╚══════════════════════════════════════════════════════════╝$(RESET)"
 	@echo ""
+	@echo "$(GREEN)Using compose file: $(COMPOSE_FILE)$(RESET)"
+	@echo ""
 	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## //' | column -t -s ':'
+	@echo ""
+	@echo "$(YELLOW)Override compose file: make COMPOSE_FILE_OVERRIDE=docker-compose.yml build$(RESET)"
 	@echo ""
 
 ## build: Build all Docker containers

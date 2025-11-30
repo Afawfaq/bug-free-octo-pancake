@@ -1,0 +1,258 @@
+# ============================================
+# LAN Reconnaissance Framework
+# Docker Compose Configuration for Windows/macOS
+# Version: 2.4.0
+# ============================================
+#
+# This configuration uses bridged networking instead of host mode
+# for compatibility with Docker Desktop on Windows and macOS.
+#
+# Usage:
+#   docker compose -f docker-compose.windows.yml up
+#   docker compose -f docker-compose.windows.yml down
+#
+# Note: Some network scanning features may be limited compared
+# to host mode on Linux. For full functionality, use WSL2 or
+# a Linux VM with the standard docker-compose.yml.
+# ============================================
+
+version: '3.8'
+
+services:
+  orchestrator:
+    build: 
+      context: ./orchestrator
+      dockerfile: Dockerfile
+    container_name: recon-orchestrator
+    restart: on-failure
+    ports:
+      - "8080:8080"    # Web dashboard
+      - "5000:5000"    # REST API
+      - "9090:9090"    # Prometheus metrics
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TARGET_NETWORK=${TARGET_NETWORK:-192.168.68.0/24}
+      - ROUTER_IP=${ROUTER_IP:-192.168.68.1}
+      - CHROMECAST_IP=${CHROMECAST_IP:-192.168.68.56}
+      - TV_IP=${TV_IP:-192.168.68.62}
+      - DLNA_IPS=${DLNA_IPS:-192.168.68.52,192.168.68.62}
+      - PRINTER_IP=${PRINTER_IP:-192.168.68.54}
+      - PASSIVE_DURATION=${PASSIVE_DURATION:-30}
+      - PARALLEL_EXECUTION=${PARALLEL_EXECUTION:-true}
+      - VERBOSE=${VERBOSE:-false}
+      - SCAN_TIMEOUT=${SCAN_TIMEOUT:-600}
+      - PLATFORM_MODE=bridged
+    depends_on:
+      passive:
+        condition: service_started
+      discovery:
+        condition: service_started
+      fingerprint:
+        condition: service_started
+      iot:
+        condition: service_started
+      nuclei:
+        condition: service_started
+      webshot:
+        condition: service_started
+      report:
+        condition: service_started
+      advanced-monitor:
+        condition: service_started
+      attack-surface:
+        condition: service_started
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "python"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  passive:
+    build: 
+      context: ./passive
+      dockerfile: Dockerfile
+    container_name: recon-passive
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  discovery:
+    build: 
+      context: ./discovery
+      dockerfile: Dockerfile
+    container_name: recon-discovery
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  fingerprint:
+    build: 
+      context: ./fingerprint
+      dockerfile: Dockerfile
+    container_name: recon-fingerprint
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  iot:
+    build: 
+      context: ./iot
+      dockerfile: Dockerfile
+    container_name: recon-iot
+    volumes:
+      - ./output:/output
+    environment:
+      - ROUTER_IP=${ROUTER_IP:-192.168.68.1}
+      - CHROMECAST_IP=${CHROMECAST_IP:-192.168.68.56}
+      - TV_IP=${TV_IP:-192.168.68.62}
+      - PRINTER_IP=${PRINTER_IP:-192.168.68.54}
+      - DLNA_IPS=${DLNA_IPS:-192.168.68.52,192.168.68.62}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  nuclei:
+    build: 
+      context: ./nuclei
+      dockerfile: Dockerfile
+    container_name: recon-nuclei
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+      - ./nuclei/custom-templates:/custom-templates
+    environment:
+      - NUCLEI_SEVERITY=${NUCLEI_SEVERITY:-critical,high,medium}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  webshot:
+    build: 
+      context: ./webshot
+      dockerfile: Dockerfile
+    container_name: recon-webshot
+    volumes:
+      - ./output:/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  report:
+    build: 
+      context: ./report
+      dockerfile: Dockerfile
+    container_name: recon-report
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  advanced-monitor:
+    build: 
+      context: ./advanced-monitor
+      dockerfile: Dockerfile
+    container_name: recon-advanced-monitor
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+      - ./templates:/templates
+    environment:
+      - TARGET_NETWORK=${TARGET_NETWORK:-192.168.68.0/24}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  attack-surface:
+    build: 
+      context: ./attack-surface
+      dockerfile: Dockerfile
+    container_name: recon-attack-surface
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    environment:
+      - TARGET_NETWORK=${TARGET_NETWORK:-192.168.68.0/24}
+      - ROUTER_IP=${ROUTER_IP:-192.168.68.1}
+      - CHROMECAST_IP=${CHROMECAST_IP:-192.168.68.56}
+      - TV_IP=${TV_IP:-192.168.68.62}
+      - PRINTER_IP=${PRINTER_IP:-192.168.68.54}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  recon-net:
+    driver: bridge
+    name: recon-network
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

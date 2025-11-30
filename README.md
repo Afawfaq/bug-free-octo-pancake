@@ -2,6 +2,8 @@
 
 A complete, containerized reconnaissance framework for comprehensive LAN network analysis. This suite performs passive and active discovery, service fingerprinting, IoT device enumeration, security scanning, and generates detailed reports.
 
+**✅ Cross-Platform: Works on Linux, Windows (WSL2/Native), and macOS**
+
 ## 🎯 Features
 
 ### **Complete Network Analysis Suite**
@@ -22,10 +24,22 @@ A complete, containerized reconnaissance framework for comprehensive LAN network
 
 ## 📋 Prerequisites
 
-- Docker (20.10+)
+- Docker (20.10+) or Docker Desktop
 - Docker Compose (1.29+)
-- Host network access (containers run with `network_mode: host`)
+- **Linux**: Host network access (containers run with `network_mode: host`)
+- **Windows/macOS**: Docker Desktop with WSL2 (recommended) or bridged networking
 - Root/admin privileges for network operations
+
+## 🖥️ Platform Support
+
+| Platform | Method | Full Support |
+|----------|--------|--------------|
+| Linux (Ubuntu/Debian) | Native Docker | ✅ Yes |
+| Windows 10/11 | Docker Desktop + WSL2 | ✅ Yes |
+| Windows (Native) | Docker Desktop + PowerShell | ⚠️ Limited |
+| macOS | Docker Desktop | ⚠️ Limited |
+
+> **Note**: For full network scanning capabilities on Windows, use WSL2. See [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md) for detailed setup instructions.
 
 ## 🚀 Quick Start
 
@@ -36,18 +50,38 @@ cd bug-free-octo-pancake
 ```
 
 ### 2. Run the Framework
+
+**Linux/macOS (Bash):**
 ```bash
 ./start.sh [TARGET_NETWORK] [ROUTER_IP] [CHROMECAST_IP] [TV_IP] [PRINTER_IP]
 ```
 
+**Windows (PowerShell):**
+```powershell
+.\start.ps1 -TargetNetwork "192.168.1.0/24" -RouterIP "192.168.1.1"
+```
+
 **Example:**
 ```bash
+# Linux/macOS
 ./start.sh 192.168.68.0/24 192.168.68.1 192.168.68.56 192.168.68.62 192.168.68.54
+
+# Windows
+.\start.ps1 -TargetNetwork "192.168.68.0/24" -RouterIP "192.168.68.1"
 ```
 
 **Default values:**
 ```bash
 ./start.sh  # Uses defaults: 192.168.68.0/24 network
+```
+
+**Quick Scan Mode:**
+```bash
+# Linux/macOS
+./start.sh --quick
+
+# Windows
+.\start.ps1 -Quick
 ```
 
 ### 3. View Results

@@ -5,6 +5,24 @@ All notable changes to the LAN Reconnaissance Framework will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2025-11-30
+
+### Added
+- **Cross-Platform Support**: Full Windows and macOS compatibility:
+  - PowerShell scripts for Windows (`start.ps1`, `stop.ps1`, `clean.ps1`, `quick-scan.ps1`, `view-report.ps1`)
+  - Windows/macOS-compatible Docker Compose file (`docker-compose.windows.yml`)
+  - Auto-detection of platform and compose file selection
+  - Comprehensive platform support documentation (`PLATFORM_SUPPORT.md`)
+  - WSL2 integration guide for best Windows experience
+  - Port mapping configuration for Docker Desktop
+- **Platform-Aware Scripts**: Shell scripts now detect platform and adjust behavior
+- **Bridged Network Mode**: Alternative networking for Docker Desktop compatibility
+
+### Changed
+- Start scripts now auto-detect and use appropriate compose file
+- README updated with cross-platform instructions
+- All shell scripts now have PowerShell equivalents
+
 ## [2.3.0] - 2025-11-29
 
 ### Added

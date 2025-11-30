@@ -22,7 +22,47 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Version
-VERSION="2.0.0"
+VERSION="2.4.0"
+
+# Compose file (auto-detected based on platform)
+COMPOSE_FILE="docker-compose.yml"
+
+# Detect platform and set compose file
+detect_platform() {
+    case "$(uname -s)" in
+        Darwin)
+            # macOS - use bridged networking
+            if [ -f "docker-compose.windows.yml" ]; then
+                COMPOSE_FILE="docker-compose.windows.yml"
+                echo -e "${BLUE}🍎 macOS detected - using bridged networking${NC}"
+            fi
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            # Windows Git Bash/MSYS/Cygwin
+            if [ -f "docker-compose.windows.yml" ]; then
+                COMPOSE_FILE="docker-compose.windows.yml"
+                echo -e "${BLUE}🪟 Windows detected - using bridged networking${NC}"
+            fi
+            ;;
+        Linux)
+            # Check if running in WSL
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                # WSL can use host networking, but check Docker Desktop mode
+                if docker info 2>/dev/null | grep -qi "operating system.*docker desktop"; then
+                    COMPOSE_FILE="docker-compose.windows.yml"
+                    echo -e "${BLUE}🐧 WSL with Docker Desktop - using bridged networking${NC}"
+                else
+                    echo -e "${GREEN}🐧 Linux/WSL detected - using host networking${NC}"
+                fi
+            else
+                echo -e "${GREEN}🐧 Linux detected - using host networking${NC}"
+            fi
+            ;;
+        *)
+            echo -e "${YELLOW}⚠️  Unknown platform - defaulting to standard compose file${NC}"
+            ;;
+    esac
+}
 
 # Print banner
 print_banner() {
@@ -191,6 +231,7 @@ print_config() {
     echo -e "   Passive Duration:   ${CYAN}${PASSIVE_DURATION}s${NC}"
     echo -e "   Parallel Execution: ${CYAN}$PARALLEL_EXECUTION${NC}"
     echo -e "   Verbose:            ${CYAN}$VERBOSE${NC}"
+    echo -e "   Compose File:       ${CYAN}$COMPOSE_FILE${NC}"
     echo ""
 }
 
@@ -200,6 +241,7 @@ main() {
     
     check_docker
     check_docker_compose
+    detect_platform
     
     load_env
     parse_args "$@"
@@ -212,14 +254,14 @@ main() {
     mkdir -p output
     
     echo -e "${GREEN}🔧 Building Docker containers...${NC}"
-    $COMPOSE_CMD build
+    $COMPOSE_CMD -f $COMPOSE_FILE build
     
     echo ""
     echo -e "${GREEN}🚀 Starting reconnaissance framework...${NC}"
     echo ""
     
     # Start containers
-    $COMPOSE_CMD up
+    $COMPOSE_CMD -f $COMPOSE_FILE up
     
     echo ""
     echo -e "${GREEN}✅ Reconnaissance complete!${NC}"
