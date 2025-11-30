@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     jq \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Aquatone

@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     jq \
+    libpcap-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Go 1.24 (required by naabu)
