@@ -5,6 +5,25 @@ All notable changes to the LAN Reconnaissance Framework will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2025-11-30
+
+### Fixed
+- **Docker Build Fix**: Updated `discovery/Dockerfile` to use Go 1.24.3 (required by naabu v2.3.7+)
+  - Removed deprecated `golang-go` package from apt
+  - Installed Go 1.24.3 from official Go downloads
+  - Set proper GOPATH and PATH environment variables
+
+### Changed
+- Removed deprecated `version` attribute from `docker-compose.yml` and `docker-compose.windows.yml`
+
+### Added
+- **Comprehensive Unit Test Suite**: Added 105+ new unit tests covering:
+  - `test_notifications.py`: NotificationManager tests (Slack, Discord, Email, webhooks)
+  - `test_database.py`: Database module tests (scans, hosts, findings, configs)
+  - `test_config_validator.py`: ConfigValidator tests (validation, defaults, env expansion)
+  - `test_retry.py`: Retry system tests (retry handler, circuit breaker, checkpoints)
+- Total test count now 115 tests
+
 ## [2.5.0] - 2025-11-30
 
 ### Added

@@ -16,7 +16,6 @@
 # a Linux VM with the standard docker-compose.yml.
 # ============================================
 
-version: '3.8'
 
 services:
   orchestrator:
