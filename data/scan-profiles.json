@@ -1,0 +1,186 @@
+{
+  "_metadata": {
+    "version": "1.0.0",
+    "description": "Predefined scan profiles for different use cases",
+    "last_updated": "2025-11-29"
+  },
+  "profiles": {
+    "quick": {
+      "name": "Quick Scan",
+      "description": "Fast reconnaissance with minimal network impact",
+      "settings": {
+        "PASSIVE_DURATION": 15,
+        "DISCOVERY_RATE": 3000,
+        "NUCLEI_SEVERITY": "critical,high",
+        "PARALLEL_EXECUTION": true,
+        "SCAN_TIMEOUT": 300,
+        "ENABLE_ATTACK_SURFACE": false,
+        "ENABLE_ADVANCED_MONITOR": false
+      },
+      "phases": {
+        "passive": true,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": false,
+        "nuclei": true,
+        "webshot": false,
+        "advanced_monitor": false,
+        "attack_surface": false,
+        "report": true
+      },
+      "estimated_time": "5-10 minutes"
+    },
+    "standard": {
+      "name": "Standard Scan",
+      "description": "Balanced reconnaissance for typical home/small office",
+      "settings": {
+        "PASSIVE_DURATION": 30,
+        "DISCOVERY_RATE": 1000,
+        "NUCLEI_SEVERITY": "critical,high,medium",
+        "PARALLEL_EXECUTION": true,
+        "SCAN_TIMEOUT": 600,
+        "ENABLE_ATTACK_SURFACE": true,
+        "ENABLE_ADVANCED_MONITOR": true
+      },
+      "phases": {
+        "passive": true,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": true,
+        "nuclei": true,
+        "webshot": true,
+        "advanced_monitor": true,
+        "attack_surface": true,
+        "report": true
+      },
+      "estimated_time": "30-45 minutes"
+    },
+    "thorough": {
+      "name": "Thorough Scan",
+      "description": "Comprehensive analysis with all modules",
+      "settings": {
+        "PASSIVE_DURATION": 120,
+        "DISCOVERY_RATE": 500,
+        "NUCLEI_SEVERITY": "critical,high,medium,low",
+        "PARALLEL_EXECUTION": true,
+        "SCAN_TIMEOUT": 1800,
+        "ENABLE_ATTACK_SURFACE": true,
+        "ENABLE_ADVANCED_MONITOR": true
+      },
+      "phases": {
+        "passive": true,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": true,
+        "nuclei": true,
+        "webshot": true,
+        "advanced_monitor": true,
+        "attack_surface": true,
+        "report": true
+      },
+      "estimated_time": "1-2 hours"
+    },
+    "stealth": {
+      "name": "Stealth Scan",
+      "description": "Low-profile scanning with minimal detection risk",
+      "settings": {
+        "PASSIVE_DURATION": 300,
+        "DISCOVERY_RATE": 100,
+        "NUCLEI_SEVERITY": "critical,high",
+        "PARALLEL_EXECUTION": false,
+        "SCAN_TIMEOUT": 3600,
+        "ENABLE_ATTACK_SURFACE": false,
+        "ENABLE_ADVANCED_MONITOR": true
+      },
+      "phases": {
+        "passive": true,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": false,
+        "nuclei": false,
+        "webshot": false,
+        "advanced_monitor": true,
+        "attack_surface": false,
+        "report": true
+      },
+      "estimated_time": "2-4 hours"
+    },
+    "iot_focused": {
+      "name": "IoT Focused",
+      "description": "Specialized scan for IoT device discovery and analysis",
+      "settings": {
+        "PASSIVE_DURATION": 90,
+        "DISCOVERY_RATE": 500,
+        "NUCLEI_SEVERITY": "critical,high,medium",
+        "PARALLEL_EXECUTION": true,
+        "SCAN_TIMEOUT": 1200,
+        "ENABLE_ATTACK_SURFACE": true,
+        "ENABLE_ADVANCED_MONITOR": true
+      },
+      "phases": {
+        "passive": true,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": true,
+        "nuclei": true,
+        "webshot": true,
+        "advanced_monitor": true,
+        "attack_surface": true,
+        "report": true
+      },
+      "port_focus": [80, 443, 1883, 5353, 8008, 8009, 8080, 8443, 9100, 49152],
+      "estimated_time": "45-60 minutes"
+    },
+    "vulnerability": {
+      "name": "Vulnerability Focus",
+      "description": "Prioritizes vulnerability detection over enumeration",
+      "settings": {
+        "PASSIVE_DURATION": 15,
+        "DISCOVERY_RATE": 2000,
+        "NUCLEI_SEVERITY": "critical,high,medium,low,info",
+        "PARALLEL_EXECUTION": true,
+        "SCAN_TIMEOUT": 900,
+        "ENABLE_ATTACK_SURFACE": true,
+        "ENABLE_ADVANCED_MONITOR": false
+      },
+      "phases": {
+        "passive": false,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": false,
+        "nuclei": true,
+        "webshot": false,
+        "advanced_monitor": false,
+        "attack_surface": true,
+        "report": true
+      },
+      "estimated_time": "20-30 minutes"
+    },
+    "compliance": {
+      "name": "Compliance Audit",
+      "description": "Focused on security compliance checks",
+      "settings": {
+        "PASSIVE_DURATION": 60,
+        "DISCOVERY_RATE": 1000,
+        "NUCLEI_SEVERITY": "critical,high,medium",
+        "PARALLEL_EXECUTION": true,
+        "SCAN_TIMEOUT": 1200,
+        "ENABLE_ATTACK_SURFACE": true,
+        "ENABLE_ADVANCED_MONITOR": true
+      },
+      "phases": {
+        "passive": true,
+        "discovery": true,
+        "fingerprint": true,
+        "iot": true,
+        "nuclei": true,
+        "webshot": true,
+        "advanced_monitor": true,
+        "attack_surface": true,
+        "report": true
+      },
+      "compliance_checks": ["ssl_tls", "default_creds", "open_ports", "outdated_firmware"],
+      "estimated_time": "45-60 minutes"
+    }
+  }
+}

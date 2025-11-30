@@ -70,10 +70,67 @@
 ## 🔄 IN PROGRESS
 
 ### Container Integration
-- [ ] Update orchestrator to include all advanced modules
+- [x] Update orchestrator to include all advanced modules
 - [ ] Test complete pipeline end-to-end
-- [ ] Optimize container startup order
-- [ ] Add health checks for all containers
+- [x] Optimize container startup order
+- [x] Add health checks for all containers
+
+### New in v2.0.0
+- [x] Parallel execution for independent phases
+- [x] CLI argument support
+- [x] Enhanced logging with colors
+- [x] Execution statistics JSON export
+- [x] GitHub Actions CI/CD pipeline
+- [x] Default credentials database
+- [x] Scan profiles system
+- [x] Notification system (Slack, Discord, Email, Webhooks)
+- [x] Enhanced report builder with risk scoring
+- [x] Additional Nuclei templates (router, smart-tv, nas, ip-camera, iot-telnet)
+- [x] CSV export for findings
+
+### New in v2.2.0 (Modular Framework)
+- [x] Plugin architecture with base classes and lifecycle management
+- [x] Hook system for scan events (pre_scan, post_discovery, on_finding, etc.)
+- [x] REST API server for programmatic access
+- [x] Database integration with SQLite for persistent storage
+- [x] Scan history and comparison features
+- [x] Retry/recovery system with multiple strategies
+- [x] Circuit breaker pattern for failing services
+- [x] Checkpoint/resume for long-running scans
+- [x] Configuration validation with JSON Schema
+- [x] Environment variable expansion in configs
+- [x] Prometheus-compatible metrics system
+- [x] Timer context manager for performance tracking
+
+### New in v2.3.0 (Enhanced UX & Analytics)
+- [x] Scan scheduler with cron-style scheduling
+- [x] Job management (add, remove, pause, resume, run-now)
+- [x] Export/Import system (JSON, CSV, XML, YAML)
+- [x] Data anonymization for secure sharing
+- [x] Anomaly detection with device baselines
+- [x] Statistical anomaly detection (z-score)
+- [x] New/missing host detection
+- [x] Port/service change detection
+- [x] Suspicious port/service alerts
+- [x] Enhanced CLI tool with interactive shell
+- [x] Web dashboard for browser-based monitoring
+- [x] Real-time scan progress visualization
+- [x] Network topology visualization
+- [x] Finding severity charts
+
+### New in v2.4.0 (Cross-Platform)
+- [x] PowerShell scripts for Windows
+- [x] Windows/macOS Docker Compose with bridged networking
+- [x] Platform auto-detection
+- [x] Platform support documentation (PLATFORM_SUPPORT.md)
+- [x] WSL2 integration guide
+
+### New in v2.5.0 (Full Usability)
+- [x] Health checker module with system verification
+- [x] Dependency manager with auto-installation
+- [x] Integration module for unified API
+- [x] requirements.txt for Python dependencies
+- [x] Full platform compatibility verification
 
 ---
 

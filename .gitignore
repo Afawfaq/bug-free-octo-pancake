@@ -4,6 +4,10 @@ output/
 # Docker volumes
 .docker/
 
+# Environment files (may contain sensitive info)
+.env
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]
@@ -29,6 +33,13 @@ wheels/
 .installed.cfg
 *.egg
 
+# Coverage and testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+
 # IDE
 .vscode/
 .idea/
@@ -39,8 +50,21 @@ wheels/
 
 # Logs
 *.log
+logs/
 
 # Temporary files
 *.tmp
 *.temp
 /tmp/
+
+# Node.js (if any)
+node_modules/
+npm-debug.log
+
+# Container build artifacts
+*.tar
+*.tar.gz
+
+# Local configuration overrides
+docker-compose.override.yml
+docker-compose.local.yml

@@ -1,18 +1,22 @@
-version: '3.8'
-
 # ============================================
 # LAN Reconnaissance Framework
-# Docker Compose Configuration v2.0.0
+# Docker Compose Configuration for Windows/macOS
+# Version: 2.4.0
 # ============================================
+#
+# This configuration uses bridged networking instead of host mode
+# for compatibility with Docker Desktop on Windows and macOS.
 #
 # Usage:
-#   docker compose up        # Start all containers
-#   docker compose down      # Stop all containers
-#   docker compose logs -f   # Follow logs
+#   docker compose -f docker-compose.windows.yml up
+#   docker compose -f docker-compose.windows.yml down
 #
-# Configuration:
-#   Copy .env.example to .env and customize
+# Note: Some network scanning features may be limited compared
+# to host mode on Linux. For full functionality, use WSL2 or
+# a Linux VM with the standard docker-compose.yml.
 # ============================================
+
+version: '3.8'
 
 services:
   orchestrator:
@@ -20,8 +24,11 @@ services:
       context: ./orchestrator
       dockerfile: Dockerfile
     container_name: recon-orchestrator
-    network_mode: host
     restart: on-failure
+    ports:
+      - "8080:8080"    # Web dashboard
+      - "5000:5000"    # REST API
+      - "9090:9090"    # Prometheus metrics
     volumes:
       - ./output:/output
       - ./templates:/templates
@@ -37,6 +44,7 @@ services:
       - PARALLEL_EXECUTION=${PARALLEL_EXECUTION:-true}
       - VERBOSE=${VERBOSE:-false}
       - SCAN_TIMEOUT=${SCAN_TIMEOUT:-600}
+      - PLATFORM_MODE=bridged
     depends_on:
       passive:
         condition: service_started
@@ -56,6 +64,8 @@ services:
         condition: service_started
       attack-surface:
         condition: service_started
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "pgrep", "-f", "python"]
       interval: 30s
@@ -68,13 +78,14 @@ services:
       context: ./passive
       dockerfile: Dockerfile
     container_name: recon-passive
-    network_mode: host
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ./output:/output
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -86,13 +97,14 @@ services:
       context: ./discovery
       dockerfile: Dockerfile
     container_name: recon-discovery
-    network_mode: host
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - ./output:/output
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -104,10 +116,11 @@ services:
       context: ./fingerprint
       dockerfile: Dockerfile
     container_name: recon-fingerprint
-    network_mode: host
     volumes:
       - ./output:/output
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -119,7 +132,6 @@ services:
       context: ./iot
       dockerfile: Dockerfile
     container_name: recon-iot
-    network_mode: host
     volumes:
       - ./output:/output
     environment:
@@ -129,6 +141,8 @@ services:
       - PRINTER_IP=${PRINTER_IP:-192.168.68.54}
       - DLNA_IPS=${DLNA_IPS:-192.168.68.52,192.168.68.62}
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -140,7 +154,6 @@ services:
       context: ./nuclei
       dockerfile: Dockerfile
     container_name: recon-nuclei
-    network_mode: host
     volumes:
       - ./output:/output
       - ./templates:/templates
@@ -148,6 +161,8 @@ services:
     environment:
       - NUCLEI_SEVERITY=${NUCLEI_SEVERITY:-critical,high,medium}
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -159,10 +174,11 @@ services:
       context: ./webshot
       dockerfile: Dockerfile
     container_name: recon-webshot
-    network_mode: host
     volumes:
       - ./output:/output
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -174,11 +190,12 @@ services:
       context: ./report
       dockerfile: Dockerfile
     container_name: recon-report
-    network_mode: host
     volumes:
       - ./output:/output
       - ./templates:/templates
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -190,7 +207,6 @@ services:
       context: ./advanced-monitor
       dockerfile: Dockerfile
     container_name: recon-advanced-monitor
-    network_mode: host
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -200,6 +216,8 @@ services:
     environment:
       - TARGET_NETWORK=${TARGET_NETWORK:-192.168.68.0/24}
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -211,7 +229,6 @@ services:
       context: ./attack-surface
       dockerfile: Dockerfile
     container_name: recon-attack-surface
-    network_mode: host
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -224,6 +241,8 @@ services:
       - TV_IP=${TV_IP:-192.168.68.62}
       - PRINTER_IP=${PRINTER_IP:-192.168.68.54}
     command: ["/bin/bash", "-c", "sleep infinity"]
+    networks:
+      - recon-net
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
@@ -231,6 +250,9 @@ services:
       retries: 3
 
 networks:
-  default:
+  recon-net:
     driver: bridge
     name: recon-network
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

@@ -1,0 +1,49 @@
+id: router-admin-panel
+
+info:
+  name: Router Admin Panel Detection
+  author: lan-recon-team
+  severity: medium
+  description: |
+    Detects exposed router administration panels that may be vulnerable to 
+    unauthorized access or default credential attacks.
+  tags: router,admin,panel,network
+  reference:
+    - https://www.cisa.gov/news-events/alerts/2018/05/25/russian-state-sponsored-cyber-actors-targeting-network-infrastructure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/login.html"
+      - "{{BaseURL}}/admin"
+      - "{{BaseURL}}/cgi-bin/luci"
+      - "{{BaseURL}}/Main_Login.asp"
+      - "{{BaseURL}}/webpages/login.html"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "router"
+          - "Router"
+          - "ASUS"
+          - "TP-Link"
+          - "NETGEAR"
+          - "Linksys"
+          - "D-Link"
+          - "Ubiquiti"
+        condition: or
+
+      - type: status
+        status:
+          - 200
+          - 401
+          - 302
+
+    extractors:
+      - type: regex
+        name: router-model
+        part: body
+        regex:
+          - 'model["\s:=]+([A-Za-z0-9\-\_]+)'
+          - 'firmware["\s:=]+([0-9\.]+)'

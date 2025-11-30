@@ -1,0 +1,51 @@
+id: nas-exposure
+
+info:
+  name: NAS Device Exposure
+  author: lan-recon-team
+  severity: high
+  description: |
+    Detects exposed Network Attached Storage (NAS) devices that may have 
+    default credentials, outdated firmware, or misconfigured shares.
+  tags: nas,storage,synology,qnap,western-digital
+  reference:
+    - https://www.cisa.gov/uscert/ncas/alerts/TA18-201A
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webman/index.cgi"
+      - "{{BaseURL}}/cgi-bin/authLogin.cgi"
+      - "{{BaseURL}}/UI/login"
+      - "{{BaseURL}}/api/v1/system/info"
+      - "{{BaseURL}}/webfig/"
+
+    matchers-condition: or
+    matchers:
+      - type: word
+        words:
+          - "Synology"
+          - "QNAP"
+          - "Western Digital"
+          - "My Cloud"
+          - "DiskStation"
+          - "ReadyNAS"
+          - "NETGEAR"
+          - "Drobo"
+          - "TerraMaster"
+        condition: or
+
+      - type: regex
+        regex:
+          - 'syno[a-z]+'
+          - 'QNAP[_\-]'
+          - 'WDMyCloud'
+
+    extractors:
+      - type: regex
+        name: nas-model
+        part: body
+        regex:
+          - 'model["\s:=]+([A-Za-z0-9\-\_]+)'
+          - 'DSM\s*([0-9\.]+)'
+          - 'QTS\s*([0-9\.]+)'
