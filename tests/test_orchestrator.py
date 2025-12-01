@@ -28,6 +28,8 @@ class TestOrchestratorInitialization:
             assert orchestrator.router_ip == "192.168.68.1"
             assert orchestrator.passive_duration == 30
             assert orchestrator.parallel_execution == True
+            assert orchestrator.timeout == 1200  # Updated default timeout
+            assert orchestrator.focused_scan == False
     
     def test_custom_configuration(self):
         """Test that custom environment variables override defaults."""
@@ -50,6 +52,32 @@ class TestOrchestratorInitialization:
             assert orchestrator.passive_duration == 60
             assert orchestrator.parallel_execution == False
             assert orchestrator.verbose == True
+    
+    def test_custom_timeout_configuration(self):
+        """Test that custom scan timeout can be set via environment."""
+        custom_env = {
+            "SCAN_TIMEOUT": "1800"
+        }
+        
+        with patch.dict(os.environ, custom_env, clear=True):
+            from run import ReconOrchestrator
+            
+            orchestrator = ReconOrchestrator()
+            
+            assert orchestrator.timeout == 1800
+    
+    def test_focused_scan_configuration(self):
+        """Test that focused scan mode can be enabled via environment."""
+        custom_env = {
+            "FOCUSED_SCAN": "true"
+        }
+        
+        with patch.dict(os.environ, custom_env, clear=True):
+            from run import ReconOrchestrator
+            
+            orchestrator = ReconOrchestrator()
+            
+            assert orchestrator.focused_scan == True
 
 
 class TestOrchestratorLogging:

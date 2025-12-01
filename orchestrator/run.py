@@ -67,7 +67,8 @@ class ReconOrchestrator:
         self.passive_duration = int(os.getenv("PASSIVE_DURATION", "30"))
         self.parallel_execution = os.getenv("PARALLEL_EXECUTION", "true").lower() == "true"
         self.verbose = os.getenv("VERBOSE", "false").lower() == "true"
-        self.timeout = int(os.getenv("SCAN_TIMEOUT", "600"))
+        self.timeout = int(os.getenv("SCAN_TIMEOUT", "1200"))
+        self.focused_scan = os.getenv("FOCUSED_SCAN", "false").lower() == "true"
         
         # Phase statistics
         self.phase_stats = {}
@@ -204,16 +205,31 @@ class ReconOrchestrator:
         
         start_time = time.time()
         
+        # In focused scan mode, scan only known device IPs instead of full network
+        if self.focused_scan:
+            # Build list of known device IPs
+            known_ips = [self.router_ip, self.chromecast_ip, self.tv_ip, self.printer_ip]
+            # Add DLNA IPs
+            if self.dlna_ips:
+                known_ips.extend(self.dlna_ips.split(','))
+            # Remove duplicates and empty strings
+            known_ips = list(set(ip.strip() for ip in known_ips if ip.strip()))
+            target = ",".join(known_ips)
+            self.log(f"Focused scan mode: scanning {len(known_ips)} known devices", "INFO")
+        else:
+            target = self.target_network
+        
         success, stdout, stderr = self.run_container_command(
             "recon-discovery",
-            f"/usr/local/bin/discovery_scan.sh {self.target_network} /output/discovery"
+            f"/usr/local/bin/discovery_scan.sh {target} /output/discovery"
         )
         
         elapsed = time.time() - start_time
         self.phase_stats["phase_2"] = {
             "name": phase_name,
             "success": success,
-            "duration": elapsed
+            "duration": elapsed,
+            "focused_scan": self.focused_scan
         }
         
         self.log(f"Phase 2 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
@@ -419,6 +435,8 @@ class ReconOrchestrator:
         self.log(f"TV IP: {self.tv_ip}")
         self.log(f"Printer IP: {self.printer_ip}")
         self.log(f"DLNA IPs: {self.dlna_ips}")
+        self.log(f"Scan Timeout: {self.timeout}s")
+        self.log(f"Focused Scan: {self.focused_scan}")
         self.log(f"Parallel Execution: {self.parallel_execution}")
         
         # Wait for containers
@@ -559,6 +577,8 @@ class ReconOrchestrator:
                 "printer_ip": self.printer_ip,
                 "dlna_ips": self.dlna_ips,
                 "passive_duration": self.passive_duration,
+                "scan_timeout": self.timeout,
+                "focused_scan": self.focused_scan,
                 "parallel_execution": self.parallel_execution
             }
         }
@@ -583,7 +603,14 @@ Examples:
   python run.py                      # Run with default settings
   python run.py --verbose            # Run with verbose output
   python run.py --no-parallel        # Disable parallel execution
-  python run.py --timeout 900        # Set custom timeout
+  python run.py --timeout 1800       # Set extended 30-minute timeout
+  python run.py --focused            # Scan only known device IPs
+
+Troubleshooting:
+  If Active Host Discovery times out on large networks:
+    1. Use --timeout 1800 or higher for larger networks
+    2. Use --focused to scan only known device IPs
+    3. Reduce the network range (e.g., 192.168.68.0/28 for 16 hosts)
         """
     )
     
@@ -608,8 +635,14 @@ Examples:
     parser.add_argument(
         "--timeout",
         type=int,
-        default=600,
-        help="Command timeout in seconds (default: 600)"
+        default=1200,
+        help="Command timeout in seconds (default: 1200)"
+    )
+    
+    parser.add_argument(
+        "--focused",
+        action="store_true",
+        help="Scan only known device IPs instead of full network (faster, more reliable)"
     )
     
     parser.add_argument(
@@ -628,6 +661,8 @@ Examples:
         os.environ["PARALLEL_EXECUTION"] = "false"
     if args.timeout:
         os.environ["SCAN_TIMEOUT"] = str(args.timeout)
+    if args.focused:
+        os.environ["FOCUSED_SCAN"] = "true"
     if args.passive_duration:
         os.environ["PASSIVE_DURATION"] = str(args.passive_duration)
     
