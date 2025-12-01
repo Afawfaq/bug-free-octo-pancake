@@ -207,15 +207,25 @@ class ReconOrchestrator:
         
         # In focused scan mode, scan only known device IPs instead of full network
         if self.focused_scan:
-            # Build list of known device IPs
-            known_ips = [self.router_ip, self.chromecast_ip, self.tv_ip, self.printer_ip]
+            # Build list of known device IPs, filtering out empty/None values
+            known_ips = []
+            for ip in [self.router_ip, self.chromecast_ip, self.tv_ip, self.printer_ip]:
+                if ip and ip.strip():
+                    known_ips.append(ip.strip())
             # Add DLNA IPs
             if self.dlna_ips:
-                known_ips.extend(self.dlna_ips.split(','))
-            # Remove duplicates and empty strings
-            known_ips = list(set(ip.strip() for ip in known_ips if ip.strip()))
-            target = ",".join(known_ips)
-            self.log(f"Focused scan mode: scanning {len(known_ips)} known devices", "INFO")
+                for ip in self.dlna_ips.split(','):
+                    if ip and ip.strip():
+                        known_ips.append(ip.strip())
+            # Remove duplicates
+            known_ips = list(set(known_ips))
+            
+            if not known_ips:
+                self.log("Warning: No valid device IPs found for focused scan, falling back to full network scan", "WARNING")
+                target = self.target_network
+            else:
+                target = ",".join(known_ips)
+                self.log(f"Focused scan mode: scanning {len(known_ips)} known devices", "INFO")
         else:
             target = self.target_network
         

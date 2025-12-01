@@ -179,8 +179,14 @@ parse_args() {
                 ;;
             --timeout)
                 if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
-                    SCAN_TIMEOUT="$2"
-                    echo -e "${YELLOW}⏱️  Scan timeout set to ${SCAN_TIMEOUT}s${NC}"
+                    # Validate that timeout is a positive integer
+                    if [[ "$2" =~ ^[0-9]+$ ]] && [ "$2" -gt 0 ]; then
+                        SCAN_TIMEOUT="$2"
+                        echo -e "${YELLOW}⏱️  Scan timeout set to ${SCAN_TIMEOUT}s${NC}"
+                    else
+                        echo -e "${RED}Error: --timeout requires a positive integer value in seconds${NC}"
+                        exit 1
+                    fi
                     shift 2
                 else
                     echo -e "${RED}Error: --timeout requires a value in seconds${NC}"
