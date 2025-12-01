@@ -344,7 +344,7 @@ Built with:
 - [Nmap](https://nmap.org/)
 - [Nuclei](https://github.com/projectdiscovery/nuclei)
 - [Naabu](https://github.com/projectdiscovery/naabu)
-- [RustScan](https://github.com/RustScan/RustScan)
+- [RustScan](https://github.com/bee-san/RustScan)
 - [Aquatone](https://github.com/michenriksen/aquatone)
 - [EyeWitness](https://github.com/FortyNorthSecurity/EyeWitness)
 - [Masscan](https://github.com/robertdavidgraham/masscan)
