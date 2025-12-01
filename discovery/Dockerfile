@@ -28,8 +28,8 @@ RUN go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 # Install rustscan
 RUN wget https://github.com/bee-san/RustScan/releases/download/2.4.1/rustscan.deb.zip && \
     unzip rustscan.deb.zip && \
-    dpkg -i rustscan_2.4.1_amd64.deb || apt-get install -f -y && \
-    rm rustscan.deb.zip rustscan_2.4.1_amd64.deb
+    dpkg -i rustscan_2.4.1-1_amd64.deb || apt-get install -f -y && \
+    rm rustscan.deb.zip rustscan_2.4.1-1_amd64.deb
 
 COPY discovery_scan.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/discovery_scan.sh
