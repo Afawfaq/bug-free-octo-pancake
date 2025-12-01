@@ -83,6 +83,8 @@ print_help() {
     echo "  --help, -h       Show this help message"
     echo "  --version, -v    Show version"
     echo "  --quick          Run quick scan (reduced scope)"
+    echo "  --focused        Scan only known device IPs (faster, more reliable)"
+    echo "  --timeout N      Set scan timeout in seconds (default: 1200)"
     echo "  --verbose        Enable verbose output"
     echo "  --no-parallel    Disable parallel execution"
     echo ""
@@ -97,6 +99,14 @@ print_help() {
     echo "  $0                                        # Use defaults or .env"
     echo "  $0 192.168.1.0/24 192.168.1.1             # Custom network"
     echo "  $0 --quick                                # Quick scan mode"
+    echo "  $0 --focused                              # Scan only known IPs"
+    echo "  $0 --timeout 1800                         # Extended 30-minute timeout"
+    echo ""
+    echo "Troubleshooting:"
+    echo "  If Active Host Discovery times out on large networks:"
+    echo "    1. Use --timeout 1800 or higher for larger networks"
+    echo "    2. Use --focused to scan only known device IPs"
+    echo "    3. Reduce the network range (e.g., 192.168.68.0/28 for 16 hosts)"
     echo ""
     echo "Configuration:"
     echo "  Copy .env.example to .env and customize for persistent configuration."
@@ -162,6 +172,27 @@ parse_args() {
                 echo -e "${YELLOW}⚡ Quick scan mode enabled${NC}"
                 shift
                 ;;
+            --focused)
+                FOCUSED_SCAN=true
+                echo -e "${YELLOW}🎯 Focused scan mode enabled - scanning only known device IPs${NC}"
+                shift
+                ;;
+            --timeout)
+                if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+                    # Validate that timeout is a positive integer
+                    if [[ "$2" =~ ^[0-9]+$ ]] && [ "$2" -gt 0 ]; then
+                        SCAN_TIMEOUT="$2"
+                        echo -e "${YELLOW}⏱️  Scan timeout set to ${SCAN_TIMEOUT}s${NC}"
+                    else
+                        echo -e "${RED}Error: --timeout requires a positive integer value in seconds${NC}"
+                        exit 1
+                    fi
+                    shift 2
+                else
+                    echo -e "${RED}Error: --timeout requires a value in seconds${NC}"
+                    exit 1
+                fi
+                ;;
             --verbose)
                 export VERBOSE=true
                 echo -e "${YELLOW}📝 Verbose mode enabled${NC}"
@@ -202,6 +233,8 @@ set_defaults() {
     PASSIVE_DURATION="${PASSIVE_DURATION:-30}"
     PARALLEL_EXECUTION="${PARALLEL_EXECUTION:-true}"
     VERBOSE="${VERBOSE:-false}"
+    SCAN_TIMEOUT="${SCAN_TIMEOUT:-1200}"
+    FOCUSED_SCAN="${FOCUSED_SCAN:-false}"
 }
 
 # Export environment variables
@@ -215,6 +248,8 @@ export_env() {
     export PASSIVE_DURATION
     export PARALLEL_EXECUTION
     export VERBOSE
+    export SCAN_TIMEOUT
+    export FOCUSED_SCAN
 }
 
 # Print configuration
@@ -229,6 +264,8 @@ print_config() {
     echo ""
     echo -e "${GREEN}⚙️  Options:${NC}"
     echo -e "   Passive Duration:   ${CYAN}${PASSIVE_DURATION}s${NC}"
+    echo -e "   Scan Timeout:       ${CYAN}${SCAN_TIMEOUT}s${NC}"
+    echo -e "   Focused Scan:       ${CYAN}$FOCUSED_SCAN${NC}"
     echo -e "   Parallel Execution: ${CYAN}$PARALLEL_EXECUTION${NC}"
     echo -e "   Verbose:            ${CYAN}$VERBOSE${NC}"
     echo -e "   Compose File:       ${CYAN}$COMPOSE_FILE${NC}"

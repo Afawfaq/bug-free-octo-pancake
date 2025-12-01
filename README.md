@@ -84,6 +84,18 @@ cd bug-free-octo-pancake
 .\start.ps1 -Quick
 ```
 
+**Focused Scan Mode (faster, more reliable):**
+```bash
+# Linux/macOS - scan only known device IPs
+./start.sh --focused
+
+# Windows
+.\start.ps1 -Focused
+
+# With custom timeout for larger networks
+./start.sh --timeout 1800
+```
+
 ### 3. View Results
 ```bash
 # HTML Report
@@ -308,6 +320,30 @@ docker ps
 
 # Check permissions
 sudo ./start.sh
+```
+
+### Active Host Discovery Timeout
+If Phase 2 (Active Host Discovery) times out on larger networks:
+
+**Option 1: Increase the timeout**
+```bash
+# Increase timeout to 30 minutes (1800 seconds)
+./start.sh --timeout 1800
+
+# Or set in .env file
+echo "SCAN_TIMEOUT=1800" >> .env
+```
+
+**Option 2: Use focused scan mode**
+```bash
+# Scan only known device IPs (faster and more reliable)
+./start.sh --focused
+```
+
+**Option 3: Reduce the network range**
+```bash
+# Scan a smaller subnet (e.g., 16 hosts instead of 254)
+./start.sh 192.168.68.0/28
 ```
 
 ### No Devices Found

@@ -34,7 +34,8 @@ services:
       - PASSIVE_DURATION=${PASSIVE_DURATION:-30}
       - PARALLEL_EXECUTION=${PARALLEL_EXECUTION:-true}
       - VERBOSE=${VERBOSE:-false}
-      - SCAN_TIMEOUT=${SCAN_TIMEOUT:-600}
+      - SCAN_TIMEOUT=${SCAN_TIMEOUT:-1200}
+      - FOCUSED_SCAN=${FOCUSED_SCAN:-false}
     depends_on:
       passive:
         condition: service_started
