@@ -146,7 +146,8 @@ services:
       - ./nuclei/custom-templates:/custom-templates
     environment:
       - NUCLEI_SEVERITY=${NUCLEI_SEVERITY:-critical,high,medium}
-    command: ["/bin/bash", "-c", "sleep infinity"]
+    entrypoint: ["/bin/bash"]
+    command: ["-c", "sleep infinity"]
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
       interval: 30s
