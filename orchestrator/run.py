@@ -51,7 +51,9 @@ class ReconOrchestrator:
         "recon-webshot",
         "recon-report",
         "recon-advanced-monitor",
-        "recon-attack-surface"
+        "recon-attack-surface",
+        "recon-credential-attacks",
+        "recon-patch-cadence"
     ]
     
     def __init__(self):
@@ -389,18 +391,21 @@ class ReconOrchestrator:
         self.log(f"Phase 8 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_8"]
     
-    def phase_9_report_generation(self) -> Dict:
-        """Phase 9: Report generation - consolidate all findings."""
-        phase_name = "Report Generation"
+    def phase_9_credential_attacks(self) -> Dict:
+        """Phase 9: Credential lifecycle weakness assessment."""
+        phase_name = "Credential Attacks"
         self.log("=" * 60, "HEADER")
         self.log(f"PHASE 9: {phase_name.upper()}", "HEADER")
         self.log("=" * 60, "HEADER")
         
         start_time = time.time()
         
+        # Get discovered IPs for credential testing
+        discovered_ips = "/output/discovery/discovered_ips.txt"
+        
         success, stdout, stderr = self.run_container_command(
-            "recon-report",
-            "/usr/local/bin/report_builder.py /output"
+            "recon-credential-attacks",
+            f"/usr/local/bin/credential_scan.sh /output/credential-attacks {discovered_ips}"
         )
         
         elapsed = time.time() - start_time
@@ -412,6 +417,57 @@ class ReconOrchestrator:
         
         self.log(f"Phase 9 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_9"]
+    
+    def phase_10_patch_cadence(self) -> Dict:
+        """Phase 10: Device update and patch cadence mapping."""
+        phase_name = "Patch Cadence Analysis"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 10: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Get discovered IPs for patch analysis
+        discovered_ips = "/output/discovery/discovered_ips.txt"
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-patch-cadence",
+            f"/usr/local/bin/patch_scan.sh /output/patch-cadence {discovered_ips}"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_10"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 10 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_10"]
+    
+    def phase_11_report_generation(self) -> Dict:
+        """Phase 11: Report generation - consolidate all findings."""
+        phase_name = "Report Generation"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 11: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-report",
+            "/usr/local/bin/report_builder.py /output"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_11"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 11 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_11"]
     
     def run_parallel_phases(self, phases: List[callable]) -> List[Dict]:
         """Execute multiple phases in parallel for better performance."""
@@ -490,8 +546,19 @@ class ReconOrchestrator:
                 self.phase_7_advanced_monitoring()
                 self.phase_8_attack_surface()
             
-            # Phase 9: Report generation (must be last)
-            self.phase_9_report_generation()
+            # Phases 9-10: Offensive modules can run in parallel
+            if self.parallel_execution:
+                self.log("Running phases 9-10 in parallel...", "INFO")
+                self.run_parallel_phases([
+                    self.phase_9_credential_attacks,
+                    self.phase_10_patch_cadence
+                ])
+            else:
+                self.phase_9_credential_attacks()
+                self.phase_10_patch_cadence()
+            
+            # Phase 11: Report generation (must be last)
+            self.phase_11_report_generation()
             
         except KeyboardInterrupt:
             self.log("Reconnaissance interrupted by user", "WARNING")
