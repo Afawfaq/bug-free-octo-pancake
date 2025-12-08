@@ -54,7 +54,8 @@ class ReconOrchestrator:
         "recon-attack-surface",
         "recon-credential-attacks",
         "recon-patch-cadence",
-        "recon-data-flow"
+        "recon-data-flow",
+        "recon-wifi-attacks"
     ]
     
     def __init__(self):
@@ -497,6 +498,35 @@ class ReconOrchestrator:
         self.log(f"Phase 12 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_12"]
     
+    def phase_13_wifi_attack_surface(self) -> Dict:
+        """Phase 13: WiFi and RF attack surface analysis."""
+        phase_name = "WiFi Attack Surface"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 13: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Get WiFi interface and timeout from environment or use defaults
+        wifi_interface = os.getenv("WIFI_INTERFACE", "wlan0")
+        pmkid_timeout = os.getenv("PMKID_TIMEOUT", "60")
+        ble_duration = os.getenv("BLE_DURATION", "10")
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-wifi-attacks",
+            f"/usr/local/bin/wifi_scan.sh /output/wifi-attacks {wifi_interface} {pmkid_timeout} {ble_duration}"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_13"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 13 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_13"]
+    
     def run_parallel_phases(self, phases: List[callable]) -> List[Dict]:
         """Execute multiple phases in parallel for better performance."""
         results = []
@@ -585,8 +615,16 @@ class ReconOrchestrator:
                 self.phase_9_credential_attacks()
                 self.phase_10_patch_cadence()
             
-            # Phase 12: Data flow analysis
-            self.phase_12_data_flow_analysis()
+            # Phases 12-13: Network analysis modules can run in parallel
+            if self.parallel_execution:
+                self.log("Running phases 12-13 in parallel...", "INFO")
+                self.run_parallel_phases([
+                    self.phase_12_data_flow_analysis,
+                    self.phase_13_wifi_attack_surface
+                ])
+            else:
+                self.phase_12_data_flow_analysis()
+                self.phase_13_wifi_attack_surface()
             
             # Phase 11: Report generation (must be last)
             self.phase_11_report_generation()

@@ -61,6 +61,8 @@ services:
         condition: service_started
       data-flow:
         condition: service_started
+      wifi-attacks:
+        condition: service_started
     healthcheck:
       test: ["CMD", "pgrep", "-f", "python"]
       interval: 30s
@@ -288,6 +290,26 @@ services:
     environment:
       - CAPTURE_DURATION=${CAPTURE_DURATION:-300}
       - INTERFACE=${INTERFACE:-eth0}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  wifi-attacks:
+    build: 
+      context: ./wifi-attacks
+      dockerfile: Dockerfile
+    container_name: recon-wifi-attacks
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./output:/output
+    environment:
+      - WIFI_INTERFACE=${WIFI_INTERFACE:-wlan0}
+      - PMKID_TIMEOUT=${PMKID_TIMEOUT:-60}
+      - BLE_DURATION=${BLE_DURATION:-10}
     command: ["/bin/bash", "-c", "sleep infinity"]
     healthcheck:
       test: ["CMD", "bash", "-c", "exit 0"]
