@@ -53,7 +53,8 @@ class ReconOrchestrator:
         "recon-advanced-monitor",
         "recon-attack-surface",
         "recon-credential-attacks",
-        "recon-patch-cadence"
+        "recon-patch-cadence",
+        "recon-data-flow"
     ]
     
     def __init__(self):
@@ -469,6 +470,33 @@ class ReconOrchestrator:
         self.log(f"Phase 11 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_11"]
     
+    def phase_12_data_flow_analysis(self) -> Dict:
+        """Phase 12: Data flow graphing and anomaly detection."""
+        phase_name = "Data Flow Analysis"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 12: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Get capture duration from environment or use default
+        capture_duration = os.getenv("CAPTURE_DURATION", "300")
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-data-flow",
+            f"/usr/local/bin/data_flow_scan.sh /output/data-flow {capture_duration}"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_12"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 12 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_12"]
+    
     def run_parallel_phases(self, phases: List[callable]) -> List[Dict]:
         """Execute multiple phases in parallel for better performance."""
         results = []
@@ -556,6 +584,9 @@ class ReconOrchestrator:
             else:
                 self.phase_9_credential_attacks()
                 self.phase_10_patch_cadence()
+            
+            # Phase 12: Data flow analysis
+            self.phase_12_data_flow_analysis()
             
             # Phase 11: Report generation (must be last)
             self.phase_11_report_generation()
