@@ -3,7 +3,7 @@
 TCP/IP Protocol Vulnerability Analyzer
 Based on foundational research from the 1970s-2000s:
 - Anderson's "Computer Security Threat Monitoring" (1980)
-- Denning's "Intrusion Detection Model" (1986)
+- Denning's "Intrusion Detection Model" (1987)
 - TCP/IP vulnerability research (Purdue, Stanford)
 - Morris Worm exploitation techniques (1988)
 
@@ -120,14 +120,19 @@ class TCPIPVulnerabilityAnalyzer:
                 'historical_context': 'TTL anomalies can indicate spoofed packets or routing issues',
             })
         
-        # Check for private IPs from external sources (simplified check)
-        if src_ip.startswith('0.') or src_ip.startswith('255.'):
+        # Check for invalid source IPs (more comprehensive check)
+        if (src_ip.startswith('0.') or 
+            src_ip.startswith('127.') or 
+            src_ip == '255.255.255.255' or
+            src_ip.startswith('224.') or  # Multicast range
+            src_ip.startswith('240.')):   # Reserved range
             anomalies.append({
                 'type': 'INVALID_SOURCE_IP',
                 'severity': 'HIGH',
                 'src_ip': src_ip,
-                'description': f'Invalid source IP address: {src_ip}',
+                'description': f'Invalid/suspicious source IP address: {src_ip}',
                 'historical_context': 'Invalid IPs often indicate spoofing or misconfiguration',
+                'note': 'Covers loopback, multicast, reserved, and broadcast ranges'
             })
         
         # Check for unusual window sizes (can indicate OS fingerprinting or spoofing)

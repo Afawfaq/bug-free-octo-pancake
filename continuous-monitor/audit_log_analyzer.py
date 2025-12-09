@@ -92,17 +92,22 @@ class AuditLogAnalyzer:
             self.baselines[subject][f'object_{obj}'] += 1
             
             # Track time-of-day patterns
-            try:
-                ts = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-                hour = ts.hour
+            hour = self._parse_timestamp_hour(timestamp)
+            if hour is not None:
                 self.baselines[subject][f'hour_{hour}'] += 1
-            except:
-                pass
         
         print(f"[Audit Analyzer] Baseline built:")
         print(f"  Tracked subjects: {len(self.subjects)}")
         print(f"  Tracked objects: {len(self.objects)}")
         print(f"  Profiles created: {len(self.baselines)}")
+    
+    def _parse_timestamp_hour(self, timestamp: str) -> Optional[int]:
+        """Parse timestamp and extract hour. Returns None on error."""
+        try:
+            ts = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            return ts.hour
+        except (ValueError, AttributeError):
+            return None
     
     def calculate_anomaly_score(self, log: Dict) -> Tuple[float, List[str]]:
         """
@@ -142,17 +147,14 @@ class AuditLogAnalyzer:
                 reasons.append(f"Rare object access: {obj}")
             
             # Check time-of-day anomaly
-            try:
-                ts = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-                hour = ts.hour
+            hour = self._parse_timestamp_hour(timestamp)
+            if hour is not None:
                 hour_count = profile.get(f'hour_{hour}', 0)
                 hour_freq = hour_count / total_actions if total_actions > 0 else 0
                 
                 if hour_freq < 0.05:  # Unusual time (< 5%)
                     score += 0.2
                     reasons.append(f"Unusual time of activity: {hour}:00")
-            except:
-                pass
         
         return min(score, 1.0), reasons
     
@@ -169,12 +171,9 @@ class AuditLogAnalyzer:
                 # Check for off-hours activity
                 off_hours_count = 0
                 for log in logs:
-                    try:
-                        ts = datetime.fromisoformat(log.get('timestamp', '').replace('Z', '+00:00'))
-                        if ts.hour in rule['hours']:
-                            off_hours_count += 1
-                    except:
-                        pass
+                    hour = self._parse_timestamp_hour(log.get('timestamp', ''))
+                    if hour is not None and hour in rule['hours']:
+                        off_hours_count += 1
                 
                 if off_hours_count > rule['threshold']:
                     detections.append({
