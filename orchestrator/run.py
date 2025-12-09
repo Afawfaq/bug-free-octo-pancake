@@ -55,8 +55,9 @@ class ReconOrchestrator:
         "recon-credential-attacks",
         "recon-patch-cadence",
         "recon-data-flow",
-        "recon-wifi-attacks"
-        "recon-trust-mapping"
+        "recon-wifi-attacks",
+        "recon-trust-mapping",
+        "recon-deception"
     ]
     
     def __init__(self):
@@ -567,6 +568,46 @@ class ReconOrchestrator:
             "duration": duration,
             "output_dir": output_dir
         }
+    
+    def phase_15_deception_honeypots(self) -> Dict:
+        """
+        Phase 15: Deception & Honeypot Deployment
+        
+        Deploys honeypots (SMB, IPP, Chromecast, SSDP) to detect and trap
+        unauthorized access attempts, providing early warning of lateral movement.
+        """
+        phase_name = "Deception & Honeypot Deployment"
+        self.log(f"Starting Phase 15: {phase_name}", "HEADER")
+        
+        start_time = time.time()
+        
+        output_dir = f"{self.output_dir}/deception"
+        duration = int(os.getenv("DECEPTION_DURATION", "3600"))  # Default 1 hour
+        
+        cmd = f"{output_dir} {duration}"
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-deception",
+            cmd,
+            timeout=duration + 60  # Extra 60s for cleanup
+        )
+        
+        elapsed = time.time() - start_time
+        
+        if not success:
+            self.log(f"Deception honeypots completed with warnings", "WARNING")
+        else:
+            self.log(f"Deception honeypots deployed successfully", "SUCCESS")
+            self.log(f"Collected honeypot data for {duration}s", "INFO")
+        
+        return {
+            "phase": 15,
+            "name": phase_name,
+            "success": True,  # Always succeed, alerts may be zero
+            "duration": elapsed,
+            "output_dir": output_dir
+        }
+    
     def run_parallel_phases(self, phases: List[callable]) -> List[Dict]:
         """Execute multiple phases in parallel for better performance."""
         results = []
@@ -665,7 +706,12 @@ class ReconOrchestrator:
             else:
                 self.phase_12_data_flow_analysis()
                 self.phase_13_wifi_attack_surface()
-            phases.append((14, self.phase_14_trust_mapping))
+            
+            # Phase 14: Trust Mapping
+            self.phase_14_trust_mapping()
+            
+            # Phase 15: Deception Honeypots
+            self.phase_15_deception_honeypots()
             
             # Phase 11: Report generation (must be last)
             self.phase_11_report_generation()
