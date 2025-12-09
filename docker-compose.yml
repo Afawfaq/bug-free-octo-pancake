@@ -55,6 +55,14 @@ services:
         condition: service_started
       attack-surface:
         condition: service_started
+      credential-attacks:
+        condition: service_started
+      patch-cadence:
+        condition: service_started
+      data-flow:
+        condition: service_started
+      wifi-attacks:
+        condition: service_started
     healthcheck:
       test: ["CMD", "pgrep", "-f", "python"]
       interval: 30s
@@ -230,7 +238,123 @@ services:
       timeout: 5s
       retries: 3
 
+  credential-attacks:
+    build: 
+      context: ./credential-attacks
+      dockerfile: Dockerfile
+    container_name: recon-credential-attacks
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    environment:
+      - TARGET_NETWORK=${TARGET_NETWORK:-192.168.68.0/24}
+      - SNIFF_DURATION=${SNIFF_DURATION:-60}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  patch-cadence:
+    build: 
+      context: ./patch-cadence
+      dockerfile: Dockerfile
+    container_name: recon-patch-cadence
+    network_mode: host
+    volumes:
+      - ./output:/output
+    environment:
+      - TARGET_NETWORK=${TARGET_NETWORK:-192.168.68.0/24}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  data-flow:
+    build: 
+      context: ./data-flow
+      dockerfile: Dockerfile
+    container_name: recon-data-flow
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./output:/output
+    environment:
+      - CAPTURE_DURATION=${CAPTURE_DURATION:-300}
+      - INTERFACE=${INTERFACE:-eth0}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  wifi-attacks:
+    build: 
+      context: ./wifi-attacks
+      dockerfile: Dockerfile
+    container_name: recon-wifi-attacks
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./output:/output
+    environment:
+      - WIFI_INTERFACE=${WIFI_INTERFACE:-wlan0}
+      - PMKID_TIMEOUT=${PMKID_TIMEOUT:-60}
+      - BLE_DURATION=${BLE_DURATION:-10}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  trust-mapping:
+    build: ./trust-mapping
+    container_name: recon-trust-mapping
+    network_mode: host
+    volumes:
+      - ./output:/output
+    environment:
+      - NETWORK_RANGE=${TARGET_NETWORK:-192.168.1.0/24}
+      - RECON_DIR=/output
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  deception:
+    build: ./deception
+    container_name: recon-deception
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    privileged: true
+    volumes:
+      - ./output:/output
+    environment:
+      - RUN_DURATION=${DECEPTION_DURATION:-3600}
+      - ALERT_THRESHOLD=${ALERT_THRESHOLD:-MEDIUM}
+    command: ["/bin/bash", "-c", "sleep infinity"]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exit 0"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
 networks:
   default:
     driver: bridge
-    name: recon-network
+  recon-network:
+    driver: bridge

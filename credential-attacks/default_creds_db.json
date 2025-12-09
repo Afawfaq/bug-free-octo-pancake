@@ -1,0 +1,54 @@
+{
+  "printers": [
+    {"username": "admin", "password": "admin"},
+    {"username": "admin", "password": "password"},
+    {"username": "admin", "password": "1234"},
+    {"username": "admin", "password": ""},
+    {"username": "root", "password": "root"},
+    {"username": "hp", "password": "hp"},
+    {"username": "epson", "password": "epson"},
+    {"username": "canon", "password": "canon"},
+    {"username": "brother", "password": "access"}
+  ],
+  "routers": [
+    {"username": "admin", "password": "admin"},
+    {"username": "admin", "password": "password"},
+    {"username": "admin", "password": "1234"},
+    {"username": "admin", "password": ""},
+    {"username": "root", "password": "root"},
+    {"username": "user", "password": "user"},
+    {"username": "admin", "password": "admin123"},
+    {"username": "administrator", "password": "administrator"}
+  ],
+  "iot_devices": [
+    {"username": "admin", "password": "admin"},
+    {"username": "admin", "password": "1234"},
+    {"username": "admin", "password": "password"},
+    {"username": "admin", "password": ""},
+    {"username": "root", "password": "root"},
+    {"username": "root", "password": "12345"},
+    {"username": "root", "password": "password"},
+    {"username": "admin", "password": "12345"}
+  ],
+  "cameras": [
+    {"username": "admin", "password": "admin"},
+    {"username": "admin", "password": ""},
+    {"username": "admin", "password": "12345"},
+    {"username": "admin", "password": "123456"},
+    {"username": "root", "password": "root"},
+    {"username": "root", "password": "12345"},
+    {"username": "ubnt", "password": "ubnt"}
+  ],
+  "nas": [
+    {"username": "admin", "password": "admin"},
+    {"username": "admin", "password": "password"},
+    {"username": "admin", "password": ""},
+    {"username": "root", "password": "root"},
+    {"username": "nas", "password": "nas"}
+  ],
+  "smart_tv": [
+    {"username": "admin", "password": "admin"},
+    {"username": "admin", "password": ""},
+    {"username": "root", "password": "root"}
+  ]
+}

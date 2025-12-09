@@ -1,0 +1,42 @@
+{
+  "output_dir": "/output",
+  "scan_interval_minutes": 60,
+  "incremental_mode": true,
+  "log_file": "/var/log/lan-recon-monitor.log",
+  "modules_enabled": [
+    "discovery",
+    "credential-attacks",
+    "patch-cadence",
+    "data-flow",
+    "wifi-attacks",
+    "trust-mapping",
+    "deception"
+  ],
+  "alert_on_changes": true,
+  "alert_threshold": "MEDIUM",
+  "syslog": {
+    "enabled": true,
+    "facility": "local0",
+    "priority": "warning"
+  },
+  "file": {
+    "enabled": true,
+    "alert_file": "/var/log/lan-recon-alerts.log",
+    "json_file": "/var/log/lan-recon-alerts.json",
+    "max_size_mb": 10,
+    "rotate": true
+  },
+  "desktop": {
+    "enabled": false,
+    "tool": "notify-send"
+  },
+  "webhook": {
+    "enabled": false,
+    "url": "",
+    "timeout": 5
+  },
+  "terminal": {
+    "enabled": true,
+    "use_colors": true
+  }
+}

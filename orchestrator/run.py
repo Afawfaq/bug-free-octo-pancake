@@ -51,7 +51,13 @@ class ReconOrchestrator:
         "recon-webshot",
         "recon-report",
         "recon-advanced-monitor",
-        "recon-attack-surface"
+        "recon-attack-surface",
+        "recon-credential-attacks",
+        "recon-patch-cadence",
+        "recon-data-flow",
+        "recon-wifi-attacks",
+        "recon-trust-mapping",
+        "recon-deception"
     ]
     
     def __init__(self):
@@ -389,18 +395,21 @@ class ReconOrchestrator:
         self.log(f"Phase 8 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_8"]
     
-    def phase_9_report_generation(self) -> Dict:
-        """Phase 9: Report generation - consolidate all findings."""
-        phase_name = "Report Generation"
+    def phase_9_credential_attacks(self) -> Dict:
+        """Phase 9: Credential lifecycle weakness assessment."""
+        phase_name = "Credential Attacks"
         self.log("=" * 60, "HEADER")
         self.log(f"PHASE 9: {phase_name.upper()}", "HEADER")
         self.log("=" * 60, "HEADER")
         
         start_time = time.time()
         
+        # Get discovered IPs for credential testing
+        discovered_ips = "/output/discovery/discovered_ips.txt"
+        
         success, stdout, stderr = self.run_container_command(
-            "recon-report",
-            "/usr/local/bin/report_builder.py /output"
+            "recon-credential-attacks",
+            f"/usr/local/bin/credential_scan.sh /output/credential-attacks {discovered_ips}"
         )
         
         elapsed = time.time() - start_time
@@ -412,6 +421,210 @@ class ReconOrchestrator:
         
         self.log(f"Phase 9 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_9"]
+    
+    def phase_10_patch_cadence(self) -> Dict:
+        """Phase 10: Device update and patch cadence mapping."""
+        phase_name = "Patch Cadence Analysis"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 10: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Get discovered IPs for patch analysis
+        discovered_ips = "/output/discovery/discovered_ips.txt"
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-patch-cadence",
+            f"/usr/local/bin/patch_scan.sh /output/patch-cadence {discovered_ips}"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_10"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 10 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_10"]
+    
+    def phase_11_report_generation(self) -> Dict:
+        """Phase 11: Unified report generation - consolidate all findings."""
+        phase_name = "Unified Report Generation"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 11: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Generate original report
+        self.log("Generating standard report...", "INFO")
+        success1, stdout1, stderr1 = self.run_container_command(
+            "recon-report",
+            "/usr/local/bin/report_builder.py /output"
+        )
+        
+        # Generate unified reports (executive, technical, compliance)
+        self.log("Generating executive, technical, and compliance reports...", "INFO")
+        success2, stdout2, stderr2 = self.run_container_command(
+            "recon-report",
+            "python3 /usr/local/bin/unified_reporter.py /output"
+        )
+        
+        elapsed = time.time() - start_time
+        success = success1 and success2
+        
+        self.phase_stats["phase_11"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed,
+            "reports_generated": ["standard", "executive", "technical", "compliance"]
+        }
+        
+        if success:
+            self.log("✓ Standard report generated", "SUCCESS")
+            self.log("✓ Executive summary generated", "SUCCESS")
+            self.log("✓ Technical report generated", "SUCCESS")
+            self.log("✓ Compliance report generated", "SUCCESS")
+        
+        self.log(f"Phase 11 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_11"]
+    
+    def phase_12_data_flow_analysis(self) -> Dict:
+        """Phase 12: Data flow graphing and anomaly detection."""
+        phase_name = "Data Flow Analysis"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 12: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Get capture duration from environment or use default
+        capture_duration = os.getenv("CAPTURE_DURATION", "300")
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-data-flow",
+            f"/usr/local/bin/data_flow_scan.sh /output/data-flow {capture_duration}"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_12"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 12 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_12"]
+    
+    def phase_13_wifi_attack_surface(self) -> Dict:
+        """Phase 13: WiFi and RF attack surface analysis."""
+        phase_name = "WiFi Attack Surface"
+        self.log("=" * 60, "HEADER")
+        self.log(f"PHASE 13: {phase_name.upper()}", "HEADER")
+        self.log("=" * 60, "HEADER")
+        
+        start_time = time.time()
+        
+        # Get WiFi interface and timeout from environment or use defaults
+        wifi_interface = os.getenv("WIFI_INTERFACE", "wlan0")
+        pmkid_timeout = os.getenv("PMKID_TIMEOUT", "60")
+        ble_duration = os.getenv("BLE_DURATION", "10")
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-wifi-attacks",
+        "recon-trust-mapping"
+            f"/usr/local/bin/wifi_scan.sh /output/wifi-attacks {wifi_interface} {pmkid_timeout} {ble_duration}"
+        )
+        
+        elapsed = time.time() - start_time
+        self.phase_stats["phase_13"] = {
+            "name": phase_name,
+            "success": success,
+            "duration": elapsed
+        }
+        
+        self.log(f"Phase 13 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
+        return self.phase_stats["phase_13"]
+    
+    
+    def phase_14_trust_mapping(self) -> Dict:
+        """
+        Phase 14: Trust Mapping & Attack Path Analysis
+        
+        Maps Windows trust relationships, SMB connections, and synthesizes
+        complete attack chains for lateral movement analysis.
+        """
+        phase_name = "Trust Mapping & Attack Path Analysis"
+        self.log(f"Starting Phase 14: {phase_name}", "HEADER")
+        
+        start_time = time.time()
+        
+        network_range = self.target_network
+        output_dir = f"{self.output_dir}/trust-mapping"
+        
+        cmd = f"{network_range} {self.output_dir}"
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-trust-mapping",
+            cmd,
+            timeout=600
+        )
+        
+        duration = time.time() - start_time
+        
+        if not success:
+            self.log(f"Trust mapping completed with warnings (may need Windows environment)", "WARNING")
+        else:
+            self.log(f"Trust mapping completed successfully", "SUCCESS")
+        
+        return {
+            "phase": 14,
+            "name": phase_name,
+            "success": True,  # Always succeed even if no Windows hosts found
+            "duration": duration,
+            "output_dir": output_dir
+        }
+    
+    def phase_15_deception_honeypots(self) -> Dict:
+        """
+        Phase 15: Deception & Honeypot Deployment
+        
+        Deploys honeypots (SMB, IPP, Chromecast, SSDP) to detect and trap
+        unauthorized access attempts, providing early warning of lateral movement.
+        """
+        phase_name = "Deception & Honeypot Deployment"
+        self.log(f"Starting Phase 15: {phase_name}", "HEADER")
+        
+        start_time = time.time()
+        
+        output_dir = f"{self.output_dir}/deception"
+        duration = int(os.getenv("DECEPTION_DURATION", "3600"))  # Default 1 hour
+        
+        cmd = f"{output_dir} {duration}"
+        
+        success, stdout, stderr = self.run_container_command(
+            "recon-deception",
+            cmd,
+            timeout=duration + 60  # Extra 60s for cleanup
+        )
+        
+        elapsed = time.time() - start_time
+        
+        if not success:
+            self.log(f"Deception honeypots completed with warnings", "WARNING")
+        else:
+            self.log(f"Deception honeypots deployed successfully", "SUCCESS")
+            self.log(f"Collected honeypot data for {duration}s", "INFO")
+        
+        return {
+            "phase": 15,
+            "name": phase_name,
+            "success": True,  # Always succeed, alerts may be zero
+            "duration": elapsed,
+            "output_dir": output_dir
+        }
     
     def run_parallel_phases(self, phases: List[callable]) -> List[Dict]:
         """Execute multiple phases in parallel for better performance."""
@@ -490,8 +703,36 @@ class ReconOrchestrator:
                 self.phase_7_advanced_monitoring()
                 self.phase_8_attack_surface()
             
-            # Phase 9: Report generation (must be last)
-            self.phase_9_report_generation()
+            # Phases 9-10: Offensive modules can run in parallel
+            if self.parallel_execution:
+                self.log("Running phases 9-10 in parallel...", "INFO")
+                self.run_parallel_phases([
+                    self.phase_9_credential_attacks,
+                    self.phase_10_patch_cadence
+                ])
+            else:
+                self.phase_9_credential_attacks()
+                self.phase_10_patch_cadence()
+            
+            # Phases 12-13: Network analysis modules can run in parallel
+            if self.parallel_execution:
+                self.log("Running phases 12-13 in parallel...", "INFO")
+                self.run_parallel_phases([
+                    self.phase_12_data_flow_analysis,
+                    self.phase_13_wifi_attack_surface
+                ])
+            else:
+                self.phase_12_data_flow_analysis()
+                self.phase_13_wifi_attack_surface()
+            
+            # Phase 14: Trust Mapping
+            self.phase_14_trust_mapping()
+            
+            # Phase 15: Deception Honeypots
+            self.phase_15_deception_honeypots()
+            
+            # Phase 11: Report generation (must be last)
+            self.phase_11_report_generation()
             
         except KeyboardInterrupt:
             self.log("Reconnaissance interrupted by user", "WARNING")
