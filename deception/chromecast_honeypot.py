@@ -13,7 +13,7 @@ import sys
 import os
 
 class ChromecastHoneypot:
-    """Fake Chromecast device using DIAL/SSDP"""
+    """Chromecast honeypot device using DIAL/SSDP"""
     
     def __init__(self, output_dir="/output/deception", port=8008):
         self.output_dir = output_dir

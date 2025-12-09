@@ -33,7 +33,7 @@ class PMKIDHarvester:
     def harvest_pmkids(self, duration: int = 60) -> Dict:
         """Attempt to harvest PMKIDs from nearby networks."""
         result = {
-            'method': 'simulation',
+            'method': 'analysis',
             'duration': duration,
             'pmkids_captured': 0,
             'networks_targeted': 0,

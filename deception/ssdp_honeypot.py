@@ -13,7 +13,7 @@ import sys
 import os
 
 class SSDPHoneypot:
-    """Fake UPnP media device"""
+    """UPnP honeypot media device"""
     
     def __init__(self, output_dir="/output/deception", port=1900):
         self.output_dir = output_dir
