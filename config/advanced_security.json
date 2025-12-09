@@ -1,0 +1,110 @@
+{
+  "version": "1.0.0",
+  "description": "Advanced Security Modules Configuration",
+  "modules": {
+    "ml_anomaly": {
+      "enabled": true,
+      "sensitivity": 0.7,
+      "baseline_size": 1000,
+      "thresholds": {
+        "port_rarity": 0.001,
+        "connection_rate": 10,
+        "service_diversity": 5,
+        "temporal_deviation": 0.1
+      }
+    },
+    "adaptive_honeypot": {
+      "enabled": true,
+      "service_type": "web",
+      "realism_level": 0.8,
+      "supported_services": ["web", "ssh", "smb"]
+    },
+    "upnp_vuln": {
+      "enabled": true,
+      "scan_timeout": 5,
+      "interface": "0.0.0.0",
+      "check_buffer_overflow": false,
+      "cves_to_check": [
+        "CVE-2012-5958",
+        "CVE-2012-5959",
+        "CVE-2012-5960",
+        "CVE-2012-5961",
+        "CVE-2012-5962",
+        "CVE-2012-5963",
+        "CVE-2012-5964",
+        "CVE-2012-5965",
+        "CVE-2025-27484"
+      ]
+    },
+    "arp_spoof": {
+      "enabled": true,
+      "thresholds": {
+        "ip_change_frequency_seconds": 300,
+        "mac_change_frequency_seconds": 600,
+        "gratuitous_arp_rate": 10
+      }
+    },
+    "tcpip_analyzer": {
+      "enabled": true,
+      "thresholds": {
+        "syn_flood_threshold": 100,
+        "port_scan_threshold": 10,
+        "fragment_count_threshold": 20
+      }
+    },
+    "audit_log": {
+      "enabled": true,
+      "baseline_required": true,
+      "rules": {
+        "failed_login_threshold": 5,
+        "privilege_escalation_threshold": 3,
+        "suspicious_file_access_threshold": 10,
+        "unusual_time_hours": [0, 1, 2, 3, 4, 5]
+      }
+    },
+    "threat_intel": {
+      "enabled": true,
+      "stix_feeds": [],
+      "auto_correlation": true,
+      "ioc_types": ["ipv4", "ipv6", "domain", "url", "file_hash", "email"]
+    },
+    "dns_tunnel": {
+      "enabled": true,
+      "thresholds": {
+        "query_length": 52,
+        "max_length": 200,
+        "entropy_threshold": 3.5,
+        "query_rate": 10,
+        "subdomain_count": 5,
+        "txt_record_size": 100
+      },
+      "whitelist": [
+        "google-analytics.com",
+        "doubleclick.net",
+        "googletagmanager.com",
+        "cloudfront.net",
+        "amazonaws.com"
+      ],
+      "suspicious_record_types": ["TXT", "NULL", "CNAME", "MX", "AAAA", "SRV"]
+    }
+  },
+  "output": {
+    "directory": "./data/advanced-security",
+    "format": "json",
+    "include_raw_data": false,
+    "generate_reports": true
+  },
+  "reporting": {
+    "generate_executive_summary": true,
+    "include_recommendations": true,
+    "severity_threshold": "MEDIUM",
+    "group_by_severity": true,
+    "include_mitre_attack": true
+  },
+  "integration": {
+    "correlate_with_recon": true,
+    "auto_block_iocs": false,
+    "notify_on_critical": false,
+    "export_stix": true
+  }
+}
