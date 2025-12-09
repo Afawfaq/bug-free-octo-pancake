@@ -13,8 +13,9 @@ RUN apt-get update && apt-get install -y \
 RUN pip3 install jinja2 networkx matplotlib pydot weasyprint
 
 COPY report_builder.py /usr/local/bin/
+COPY unified_reporter.py /usr/local/bin/
 COPY report_template.html /templates/
-RUN chmod +x /usr/local/bin/report_builder.py
+RUN chmod +x /usr/local/bin/report_builder.py /usr/local/bin/unified_reporter.py
 
 WORKDIR /output
 

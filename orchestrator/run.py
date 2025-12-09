@@ -450,25 +450,43 @@ class ReconOrchestrator:
         return self.phase_stats["phase_10"]
     
     def phase_11_report_generation(self) -> Dict:
-        """Phase 11: Report generation - consolidate all findings."""
-        phase_name = "Report Generation"
+        """Phase 11: Unified report generation - consolidate all findings."""
+        phase_name = "Unified Report Generation"
         self.log("=" * 60, "HEADER")
         self.log(f"PHASE 11: {phase_name.upper()}", "HEADER")
         self.log("=" * 60, "HEADER")
         
         start_time = time.time()
         
-        success, stdout, stderr = self.run_container_command(
+        # Generate original report
+        self.log("Generating standard report...", "INFO")
+        success1, stdout1, stderr1 = self.run_container_command(
             "recon-report",
             "/usr/local/bin/report_builder.py /output"
         )
         
+        # Generate unified reports (executive, technical, compliance)
+        self.log("Generating executive, technical, and compliance reports...", "INFO")
+        success2, stdout2, stderr2 = self.run_container_command(
+            "recon-report",
+            "python3 /usr/local/bin/unified_reporter.py /output"
+        )
+        
         elapsed = time.time() - start_time
+        success = success1 and success2
+        
         self.phase_stats["phase_11"] = {
             "name": phase_name,
             "success": success,
-            "duration": elapsed
+            "duration": elapsed,
+            "reports_generated": ["standard", "executive", "technical", "compliance"]
         }
+        
+        if success:
+            self.log("✓ Standard report generated", "SUCCESS")
+            self.log("✓ Executive summary generated", "SUCCESS")
+            self.log("✓ Technical report generated", "SUCCESS")
+            self.log("✓ Compliance report generated", "SUCCESS")
         
         self.log(f"Phase 11 complete in {elapsed:.2f}s", "SUCCESS" if success else "WARNING")
         return self.phase_stats["phase_11"]
