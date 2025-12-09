@@ -320,4 +320,14 @@ services:
 networks:
   default:
     driver: bridge
+
+  trust-mapping:
+    build: ./trust-mapping
+    container_name: recon-trust-mapping
+    network_mode: host
+    volumes:
+      - ./output:/output
+    environment:
+      - NETWORK_RANGE=${TARGET_NETWORK:-192.168.1.0/24}
+      - RECON_DIR=/output
     name: recon-network
