@@ -79,7 +79,7 @@ class NTPServer:
         # Build NTP response
         response = struct.pack('!B B B b', 0x24, 1, 6, 0xEC)
         response += struct.pack('!I I', 0, 0)
-        response += struct.pack('!I', 0)  # Reference ID (server identifier)
+        response += struct.pack('!4s', b'LOCL')  # Reference ID (local clock)
         response += struct.pack('!I I', ntp_seconds, ntp_fraction)
         response += data[40:48]
         response += struct.pack('!I I', ntp_seconds, ntp_fraction)
