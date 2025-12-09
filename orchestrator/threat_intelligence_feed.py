@@ -247,8 +247,11 @@ class ThreatIntelligenceFeed:
         """
         Generate a STIX 2.1 indicator object from an IoC.
         Can be shared via TAXII.
+        Note: Using full SHA256 hash for ID to prevent collisions.
         """
-        indicator_id = f"indicator--{hashlib.sha256(value.encode()).hexdigest()[:36]}"
+        # Use full hash to ensure uniqueness per STIX 2.1 best practices
+        hash_full = hashlib.sha256(value.encode()).hexdigest()
+        indicator_id = f"indicator--{hash_full}"
         
         # Build STIX pattern based on IoC type
         pattern_map = {
@@ -288,9 +291,11 @@ class ThreatIntelligenceFeed:
                 indicator = self.generate_stix_indicator(ioc_type, value)
                 objects.append(indicator)
         
+        # Use full hash for bundle ID to ensure uniqueness
+        bundle_hash = hashlib.sha256(str(datetime.utcnow()).encode()).hexdigest()
         bundle = {
             'type': 'bundle',
-            'id': f"bundle--{hashlib.sha256(str(datetime.utcnow()).encode()).hexdigest()[:36]}",
+            'id': f"bundle--{bundle_hash}",
             'spec_version': '2.1',
             'objects': objects
         }

@@ -38,13 +38,14 @@ class DNSTunnelDetector:
         self.detections = []
         
         # Detection thresholds based on research
+        # References: Fidelis Security DNS Tunneling Detection, arXiv:2507.10267v1
         self.thresholds = {
-            'query_length': 52,  # Suspicious if > 52 chars
-            'max_length': 200,   # Very suspicious if > 200 chars
-            'entropy_threshold': 3.5,  # Shannon entropy threshold
+            'query_length': 52,  # Suspicious if > 52 chars (typical legitimate max ~40 chars)
+            'max_length': 200,   # Very suspicious if > 200 chars (approaching 255 char DNS limit)
+            'entropy_threshold': 3.5,  # Shannon entropy (random English ~4.1, encoded data >3.5)
             'query_rate': 10,    # Queries per minute per domain
             'subdomain_count': 5,  # Unique subdomains per minute
-            'txt_record_size': 100,  # Bytes in TXT record
+            'txt_record_size': 100,  # Bytes in TXT record (typical legitimate <100 bytes)
         }
         
         # Suspicious record types often used for tunneling
@@ -232,7 +233,20 @@ class DNSTunnelDetector:
             if len(timestamps) >= 5:
                 # Calculate intervals between queries
                 try:
-                    times = [datetime.fromisoformat(ts.replace('Z', '+00:00')) for ts in timestamps if ts]
+                    # Normalize timestamps - handle both Z suffix and explicit timezone
+                    times = []
+                    for ts in timestamps:
+                        if not ts:
+                            continue
+                        # Remove Z and add explicit UTC if needed
+                        normalized = ts.replace('Z', '+00:00') if ts.endswith('Z') else ts
+                        try:
+                            times.append(datetime.fromisoformat(normalized))
+                        except ValueError:
+                            continue
+                    
+                    if len(times) < 5:
+                        continue
                     times.sort()
                     intervals = [(times[i+1] - times[i]).total_seconds() for i in range(len(times)-1)]
                     
@@ -383,7 +397,7 @@ def main():
     for query in test_queries:
         detections = detector.process_query(query)
         if detections:
-            print(f"\n[DETECTION] Found {len(detections)} anomaly/anomalies:")
+            print(f"\n[DETECTION] Found {len(detections)} anomaly(ies):")
             for detection in detections:
                 print(f"  Type: {detection['type']}")
                 print(f"  Severity: {detection['severity']}")
