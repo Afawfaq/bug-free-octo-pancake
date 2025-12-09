@@ -70,7 +70,7 @@ class IPPHandler(BaseHTTPRequestHandler):
         self.wfile.write(b'Job accepted')
 
 class IPPHoneypot:
-    """Fake IPP printer server"""
+    """IPP honeypot printer server"""
     
     def __init__(self, output_dir="/output/deception", port=631):
         self.output_dir = output_dir

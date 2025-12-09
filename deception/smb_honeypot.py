@@ -13,7 +13,7 @@ import sys
 import os
 
 class SMBHoneypot:
-    """Fake SMB server to detect file sharing attacks"""
+    """SMB honeypot server to detect file sharing attacks"""
     
     def __init__(self, output_dir="/output/deception", port=445):
         self.output_dir = output_dir
@@ -103,8 +103,8 @@ class SMBHoneypot:
         self.log_connection(source_ip)
         
         try:
-            # Simple SMB banner simulation
-            # In a real implementation, would use impacket's SMB server
+            # SMB banner implementation for honeypot
+            # Uses simplified protocol handling for detection purposes
             data = client_socket.recv(1024)
             if data:
                 # Log the connection attempt

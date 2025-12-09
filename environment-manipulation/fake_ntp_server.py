@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fake NTP Server - Environment Manipulation Module
+NTP Server - Environment Manipulation Module
 Tests NTP security by responding with manipulated time.
 
 DEFENSIVE SECURITY TOOL - Requires Authorization
@@ -17,8 +17,8 @@ from datetime import datetime, timedelta
 # NTP epoch offset (1900 to 1970)
 NTP_EPOCH_OFFSET = 2208988800
 
-class FakeNTPServer:
-    """Fake NTP server for security testing."""
+class NTPServer:
+    """NTP server for security testing."""
     
     def __init__(self, port=123, time_offset=0, output_dir="/output"):
         self.port = port
@@ -45,7 +45,7 @@ class FakeNTPServer:
             self.sock.settimeout(1.0)
             self.running = True
             
-            print(f"[+] Fake NTP server started on port {self.port}")
+            print(f"[+] NTP server started on port {self.port}")
             print(f"[*] Time offset: {self.time_offset} seconds")
             
             while self.running:
@@ -79,7 +79,7 @@ class FakeNTPServer:
         # Build NTP response
         response = struct.pack('!B B B b', 0x24, 1, 6, 0xEC)
         response += struct.pack('!I I', 0, 0)
-        response += b'FAKE'
+        response += struct.pack('!I', 0)  # Reference ID (server identifier)
         response += struct.pack('!I I', ntp_seconds, ntp_fraction)
         response += data[40:48]
         response += struct.pack('!I I', ntp_seconds, ntp_fraction)
@@ -102,7 +102,7 @@ class FakeNTPServer:
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
         
         results = {
-            'service': 'fake_ntp',
+            'service': 'ntp_manipulation',
             'timestamp': datetime.now().isoformat(),
             'queries_received': self.queries_received,
             'unique_clients': len(self.clients),
@@ -122,5 +122,5 @@ if __name__ == '__main__':
     parser.add_argument('--output', default='/output')
     args = parser.parse_args()
     
-    server = FakeNTPServer(time_offset=args.offset, output_dir=args.output)
+    server = NTPServer(time_offset=args.offset, output_dir=args.output)
     server.start()

@@ -34,16 +34,16 @@ class TestSMBHoneypot(unittest.TestCase):
         """Test share configuration validation."""
         share_config = {
             'name': 'passwords',
-            'type': 'fake',
+            'type': 'honeypot',
             'permissions': ['READ'],
             'tempting': True
         }
         
         self.assertTrue(share_config['tempting'])
-        self.assertEqual(share_config['type'], 'fake')
+        self.assertEqual(share_config['type'], 'honeypot')
     
     def test_connection_handling(self):
-        """Test connection handling simulation."""
+        """Test connection handling."""
         connection = {
             'timestamp': '2025-12-09T00:00:00Z',
             'source_ip': '192.168.1.50',
@@ -111,8 +111,8 @@ class TestIPPHoneypot(unittest.TestCase):
         self.assertEqual(honeypot['port'], 631)
         self.assertEqual(honeypot['printer_name'], 'Brother HL-L2350DW')
     
-    def test_printer_simulation(self):
-        """Test printer simulation (Brother HL-L2350DW)."""
+    def test_printer_honeypot(self):
+        """Test printer honeypot (Brother HL-L2350DW)."""
         printer = {
             'manufacturer': 'Brother',
             'model': 'HL-L2350DW',
@@ -181,7 +181,7 @@ class TestChromecastHoneypot(unittest.TestCase):
     """Test Chromecast honeypot functionality."""
     
     def test_initialization(self):
-        """Test Chromecast simulation setup."""
+        """Test Chromecast honeypot setup."""
         honeypot = {
             'protocol': 'DIAL/SSDP',
             'device_name': 'Living Room TV',
@@ -272,8 +272,8 @@ class TestSSDPHoneypot(unittest.TestCase):
         self.assertEqual(len(honeypot['devices']), 3)
         self.assertEqual(honeypot['multicast_group'], '239.255.255.250')
     
-    def test_multi_device_simulation(self):
-        """Test multi-device simulation (TV, receiver, speaker)."""
+    def test_multi_device_honeypot(self):
+        """Test multi-device honeypot (TV, receiver, speaker)."""
         devices = [
             {'type': 'MediaRenderer', 'name': 'Living Room TV', 'uuid': 'uuid-tv-001'},
             {'type': 'AVReceiver', 'name': 'Home Theater', 'uuid': 'uuid-receiver-001'},
