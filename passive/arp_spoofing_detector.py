@@ -92,8 +92,13 @@ class ARPSpoofingDetector:
     
     def get_vendor(self, mac: str) -> Optional[str]:
         """Get vendor name from MAC address OUI."""
-        mac_upper = mac.upper()
-        oui = ':'.join(mac_upper.split(':')[:3])
+        # Normalize MAC address format (handle colons, dashes, or no separators)
+        mac_clean = mac.replace(':', '').replace('-', '').replace('.', '').upper()
+        if len(mac_clean) < 6:
+            return None
+        
+        # Extract OUI (first 6 characters) and format with colons
+        oui = ':'.join([mac_clean[i:i+2] for i in range(0, 6, 2)])
         return self.vendor_ouis.get(oui)
     
     def process_arp_entry(self, ip: str, mac: str, timestamp: Optional[datetime] = None) -> List[Dict]:

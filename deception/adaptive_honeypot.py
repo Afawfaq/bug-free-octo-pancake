@@ -2,8 +2,10 @@
 """
 Adaptive Honeypot Module
 Implements adaptive high-interaction honeypot concepts from research:
-- HoneyIoT: Adaptive High-Interaction Honeypot for IoT Devices (arXiv 2023)
-- Advancing Cybersecurity with Honeypots and Deception Strategies (MDPI 2024)
+- HoneyIoT: Adaptive High-Interaction Honeypot for IoT Devices Through 
+  Profile Learning (arXiv:2305.06430, 2023)
+- Advancing Cybersecurity with Honeypots and Deception Strategies
+  (MDPI Electronics 2024, DOI:10.3390/electronics13010014)
 
 Features:
 - Behavioral mimicry to appear more realistic
