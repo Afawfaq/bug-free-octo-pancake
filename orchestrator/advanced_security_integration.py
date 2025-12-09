@@ -98,10 +98,12 @@ class AdvancedSecurityOrchestrator:
             if self.enabled_modules.get('audit_log'):
                 # Import with importlib to handle hyphenated directory name
                 import importlib.util
+                from pathlib import Path
+                
+                audit_log_path = Path(__file__).parent.parent / "continuous-monitor" / "audit_log_analyzer.py"
                 spec = importlib.util.spec_from_file_location(
                     "audit_log_analyzer",
-                    os.path.join(os.path.dirname(os.path.dirname(__file__)), 
-                                 "continuous-monitor", "audit_log_analyzer.py")
+                    str(audit_log_path)
                 )
                 if spec and spec.loader:
                     audit_module = importlib.util.module_from_spec(spec)
@@ -170,9 +172,16 @@ class AdvancedSecurityOrchestrator:
                     observations.append(obs)
             
             # Train baseline and detect anomalies
+            # Use 50% of data for training, 50% for testing
             if observations:
-                detector.train_baseline(observations[:len(observations)//2])
-                for obs in observations[len(observations)//2:]:
+                train_test_split = 0.5
+                split_index = int(len(observations) * train_test_split)
+                
+                training_data = observations[:split_index]
+                testing_data = observations[split_index:]
+                
+                detector.train_baseline(training_data)
+                for obs in testing_data:
                     anomaly = detector.detect_anomaly(obs)
                     if anomaly:
                         analysis['findings'].setdefault('anomalies', []).append(anomaly)
@@ -265,8 +274,9 @@ class AdvancedSecurityOrchestrator:
             if hasattr(module, 'generate_report'):
                 try:
                     report['module_reports'][name] = module.generate_report()
-                except:
-                    pass
+                except Exception as e:
+                    # Log error but continue with other modules
+                    print(f"[Advanced Security] Warning: Failed to generate report for {name}: {e}")
         
         # Save consolidated report
         output_file = f"{self.output_dir}/advanced_security_report.json"
